@@ -1,0 +1,13 @@
+.venv
+
+.vscode
+
+__pycache__/
+
+app/config/*.json
+
+/data/
+
+/docs/password.txt
+
+/app/test/
