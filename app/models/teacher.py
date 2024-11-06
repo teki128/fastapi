@@ -1,4 +1,3 @@
-from typing import Union
 from sqlmodel import SQLModel, Field
 from app.models.college import College
 
