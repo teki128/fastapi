@@ -19,6 +19,7 @@ class Schedule(ScheduleBase, table=True):
     odd_or_even: OddEvenEnum = Field(OddEvenEnum.NORMAL)
     section_start: int = Field()
     section_end: int = Field()
+    capacity: int = Field()
     info: Union[str, None] = Field(default=None)
     building: str = Field(foreign_key=Classroom.building)
     room: str = Field(foreign_key=Classroom.room)
