@@ -1,7 +1,7 @@
 from typing import Annotated
 from app.config.config import ACCESS_TOKEN_EXPIRE_DAYS
-from app.utils.authenticate import  authenticate_user, create_access_token
-from app.utils.user import get_current_user_safe
+from app.service.authenticate import  authenticate_user, create_access_token
+from app.service.user import get_current_user_safe
 from app.models.user import User
 from fastapi import Depends, APIRouter, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm

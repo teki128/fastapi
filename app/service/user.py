@@ -1,5 +1,5 @@
 from typing import Annotated
-from app.utils.authenticate import decode_token, decode_token_safe
+from app.service.authenticate import decode_token, decode_token_safe
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
 
