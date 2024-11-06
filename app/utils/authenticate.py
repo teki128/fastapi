@@ -1,5 +1,5 @@
 from app.models.user import User, UserPublic
-from app.schemas.token import TokenData
+from app.models.token import TokenData
 from data.database import fake_users_db
 from typing import Union
 import jwt
@@ -56,7 +56,7 @@ def decode_token_safe(token):
     except InvalidTokenError:
         return False
     user_safe = get_user_safe(fake_users_db, token_data.id) 
-    # FIXME: schemas/token.token_data设为int报错，暂设为str
+    # FIXME: models/token.token_data设为int报错，暂设为str
     return user_safe
 
 def hash_password(password: str):
