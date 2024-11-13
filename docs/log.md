@@ -24,3 +24,11 @@ app/util 下文件移动到 app/service 内
 ### fix
 
 app/models/schedule.py: 添加了课程容量的字段
+
+## 2024.11.13
+
+### fix
+
+app/models/classroom.py, course.py, favour.py, teach.py: 添加了遗漏的字段。
+app/models/section.py: 新增表，此表为课序信息表。
+app/models/schedule.py: 更改此表为课序安排表。
