@@ -12,17 +12,24 @@ class User(UserBase, table=True):
     question: Union[str, None] = Field(default=None)
     hashed_answer: Union[str, None] = Field(default=None)
     tele: Union[int, None] = Field(default=None)
-    college_id: int = Field(foreign_key=College.id)
+    college_id: Union[int, None] = Field(foreign_key=College.id, default=None)
 
 class UserPublic(UserBase):
-    pass
+    tele: Union[int, None] = Field(default=None)
+    college_id: int = Field(foreign_key=College.id)
+
 
 class UserCreate(UserBase):
-    hashed_password: str
+    raw_password: str = Field(min_length=6)
+    college_id: Union[int, None] = Field(foreign_key=College.id, default=None)
+
 
 class UserUpdate(UserBase):
-    username: Union[str, None] = None
-    hashed_password: Union[str, None] = None
+    raw_password: Union[str, None] = Field(min_length=6, default=None)
+    question: Union[str, None] = Field(default=None)
+    raw_answer: Union[str, None] = Field(default=None)
+    tele: Union[int, None] = Field(default=None)
+    college_id: Union[int, None] = Field(foreign_key=College.id, default=None)
 
 
 

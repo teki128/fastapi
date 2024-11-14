@@ -1,16 +1,16 @@
 from app.models.user import User, UserPublic
 from app.models.token import TokenData
 from data.database import fake_users_db
-from typing import Union
+from typing import Union, Annotated
+from fastapi import Depends, HTTPException, status
+from fastapi.security import OAuth2PasswordBearer
 import jwt
 from datetime import timedelta, datetime, timezone
 from jwt.exceptions import InvalidTokenError
-from passlib.context import CryptContext
 from app.config.config import SECRET_KEY, ALGORITHM
+from app.utils.authenciate import verify_password
 
-
-pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto") # hashlib的上下文
-
+oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
 
 def get_user(db, id: int) -> User:
     if id in db:
@@ -59,11 +59,27 @@ def decode_token_safe(token):
     # FIXME: models/token.token_data设为int报错，暂设为str
     return user_safe
 
-def hash_password(password: str):
-    return pwd_context.hash(password)
 
-def verify_password(raw_password, hashed_password):
-    return pwd_context.verify(raw_password, hashed_password)
+async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]): # oauth2_scheme 提取出header里面的auth头里面的token到token参数内
+    user = decode_token(token)
+    if not user:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return user
+
+async def get_current_user_safe(token: Annotated[str, Depends(oauth2_scheme)]):
+    user_safe = decode_token_safe(token)
+    if not user_safe:
+        raise HTTPException(
+            status_code=status.HTTP_401_UNAUTHORIZED,
+            detail="Invalid authentication credentials",
+            headers={"WWW-Authenticate": "Bearer"},
+        )
+    return user_safe
+
 
 def authenticate_user(db, id: int, password: str):
     user = get_user(db, id)

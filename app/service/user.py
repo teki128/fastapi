@@ -1,27 +1,53 @@
-from typing import Annotated
-from app.service.authenticate import decode_token, decode_token_safe
-from fastapi import Depends, HTTPException, status
-from fastapi.security import OAuth2PasswordBearer
+from fastapi import APIRouter, HTTPException
+from app.models.user import *
+from app.utils.authenciate import hash_password
+from app.db.session import SessionDep
 
-oauth2_scheme = OAuth2PasswordBearer(tokenUrl='token')
+router = APIRouter()
 
-async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)]): # oauth2_scheme 提取出header里面的auth头里面的token到token参数内
-    user = decode_token(token)
-    if not user:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return user
+@router.post('/user/', response_model=UserPublic)
+def create_user(user_not_safe: UserCreate, session: SessionDep) -> UserPublic:
+    user: User = user_not_safe
+    user.hashed_password = hash_password(user_not_safe.raw_password)
+    db_user = User.model_validate(user)
+    session.add(db_user)
+    session.commit()
+    session.refresh(db_user)
+    return db_user
 
-async def get_current_user_safe(token: Annotated[str, Depends(oauth2_scheme)]):
-    user_safe = decode_token_safe(token)
-    if not user_safe:
-        raise HTTPException(
-            status_code=status.HTTP_401_UNAUTHORIZED,
-            detail="Invalid authentication credentials",
-            headers={"WWW-Authenticate": "Bearer"},
-        )
-    return user_safe
+@router.delete('/user/{user_id}', status_code=204)
+def delete_user(user_id: int, session: SessionDep): 
+    db_user = session.get(User, user_id)
+    if not db_user:
+        raise HTTPException(status_code=404, detail="User not found")
+    
+    session.delete(db_user)
+    session.commit()
 
+@router.get('/user/{user_id}', response_model=UserPublic)
+def read_user(user_id: int, session: SessionDep):
+    db_user = session.get(User, user_id)
+    if not db_user: 
+        raise HTTPException(status_code=404, detail='User not found')
+    
+    return db_user
+
+@router.patch('/user/{user_id}', response_model=UserPublic)
+def update_user(user_id: int, new_user_not_safe: UserUpdate, session: SessionDep) -> UserPublic:
+    db_user = session.get(User, user_id)
+    if not db_user: 
+        raise HTTPException(status_code=404, detail='User not found')
+    
+    new_user_not_safe_data: dict = new_user_not_safe.model_dump(exclude_unset=True)
+    for key, value in new_user_not_safe_data.items():
+        if key == 'raw_password' and value:
+            db_user.hashed_password = hash_password(value)
+        elif key == 'raw_answer' and value:
+            db_user.hashed_answer = hash_password(value)
+        else:
+            setattr(db_user, key, value)
+
+    session.add(db_user)
+    session.commit()
+    session.refresh(db_user)
+    return db_user
