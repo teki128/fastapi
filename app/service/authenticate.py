@@ -12,6 +12,7 @@ from app.config.config import SECRET_KEY, ALGORITHM
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto") # hashlib的上下文
 
 
+#FIXME: 迁移到user里
 def get_user(db, id: int) -> User:
     if id in db:
         user_dict = db[id]

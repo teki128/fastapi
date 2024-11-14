@@ -1,48 +1,38 @@
+from app.models.course import Course
+from app.db.session import engine
+from fastapi import FastAPI, HTTPException
+from sqlmodel import Session, select
 
+app = FastAPI
 
-@app.post("/users/", response_model=User)
-def create_user(user: User) -> User:
+@app.post("/courses/", response_model=Course)
+def create_course(course: Course) -> Course:
     with Session(engine) as session:
-        session.add(user)
+        session.add(course)
         session.commit()
-        session.refresh(user)
-        return user
+        session.refresh(course)
+        return course
 
-@app.get("/users/", response_model=list[User])
-def read_users():
+@app.get("/courses/", response_model=list[Course])
+def read_courses():
     with Session(engine) as session:
-        users = session.exec(select(User)).all()
-        return users
+        courses = session.exec(select(Course)).all()
+        return courses
 
-@app.get("/users/{user_id}", response_model=User)
-def read_user(user_id: int):
+@app.get("/courses/{course_id}", response_model=Course)
+def read_course(course_id: int):
     with Session(engine) as session:
-        user = session.get(User, user_id)
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        return user
+        course = session.get(Course, course_id)
+        if not course:
+            raise HTTPException(status_code=404, detail="Course not found")
+        return course
 
-@app.put("/users/{user_id}", response_model=User)
-def update_user(user: User):
+@app.delete("/courses/{course_id}")
+def delete_course(course_id: int):
     with Session(engine) as session:
-        db_user = session.get(User, user.id)
-        if not db_user:
-            raise HTTPException(status_code=404, detail="User not found")
-
-        db_user.name = user.name
-        db_user.age = user.age
-        db_user.hashed_password = user.hashed_password
-        db_user.hashed_answer = user.hashed_answer
-        session.commit()
-        session.refresh(db_user)
-        return db_user
-
-@app.delete("/users/{user_id}")
-def delete_user(user_id: int):
-    with Session(engine) as session:
-        user = session.get(User, user_id)
-        if not user:
-            raise HTTPException(status_code=404, detail="User not found")
-        session.delete(user)
+        course = session.get(Course, course_id)
+        if not course:
+            raise HTTPException(status_code=404, detail="Course not found")
+        session.delete(course)
         session.commit()
         return {"ok": True}
