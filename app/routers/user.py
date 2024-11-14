@@ -8,7 +8,7 @@ from fastapi.security import OAuth2PasswordRequestForm
 from data.database import fake_users_db
 from datetime import timedelta
 
-router = APIRouter()
+router = APIRouter(prefix='api')
 
 @router.post('/token') # 登录
 def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends(OAuth2PasswordRequestForm)]):

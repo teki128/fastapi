@@ -1,25 +1,31 @@
 from enum import Enum
 from sqlmodel import SQLModel, Field
-from app.models.lesson import Lesson
-from app.models.classroom import Classroom
-from typing import Union
+from app.models.section import Section
+
 
 class OddEvenEnum(str, Enum):
     NORMAL = ''
     ODD = ''
     EVEN = ''
 
+class Weekday(int, Enum):
+    MON = 1
+    TUE = 2
+    WED = 3
+    THU = 4
+    FRI = 5
+    SAT = 6
+    SUN = 0
+
 class ScheduleBase(SQLModel):
-    lesson_id: int = Field(primary_key=True, foreign_key=Lesson.id)
-    lesson_sn: int = Field(primary_key=True)
+    id: int = Field(primary_key=True)
+    section_id: int = Field(foreign_key=Section.id)
 
 class Schedule(ScheduleBase, table=True):
     week_start: int = Field()
     week_end: int = Field()
+    weekday: Weekday = Field()
     odd_or_even: OddEvenEnum = Field(OddEvenEnum.NORMAL)
-    section_start: int = Field()
-    section_end: int = Field()
-    capacity: int = Field()
-    info: Union[str, None] = Field(default=None)
-    building: str = Field(foreign_key=Classroom.building)
-    room: str = Field(foreign_key=Classroom.room)
+    period_start: int = Field()
+    period_end: int = Field()
+    
