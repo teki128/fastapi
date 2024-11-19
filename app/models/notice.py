@@ -1,5 +1,4 @@
 from sqlmodel import SQLModel, Field, Relationship
-from app.models.user import UserBase, User
 from typing import Union
 
 class NoticeBase(SQLModel):
@@ -8,5 +7,5 @@ class NoticeBase(SQLModel):
 
 class Notice(NoticeBase, table=True):
     content: Union[str, None] = Field(default=None)
-    author_id: int = Field(foreign_key=User.id)
+    author_id: int = Field(foreign_key='user.id')
     # author: UserBase = Relationship(back_populates='') # TODO: 是否添加？

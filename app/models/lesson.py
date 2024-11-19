@@ -1,5 +1,4 @@
 from sqlmodel import SQLModel, Field
-from app.models.college import College
 from enum import Enum
 
 class ImportanceEnum(str, Enum):
@@ -17,7 +16,7 @@ class LessonBase(SQLModel):
 
 
 class Lesson(LessonBase, table=True):
-    college_id: int = Field(foreign_key=College.id)
+    college_id: int = Field(foreign_key='college.id')
     credit: int
     study_time: int
     importance: ImportanceEnum = Field(default=ImportanceEnum.HIGH) 

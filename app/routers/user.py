@@ -1,14 +1,14 @@
 from typing import Annotated
 from app.config.config import ACCESS_TOKEN_EXPIRE_DAYS
-from app.service.authenticate import  authenticate_user, create_access_token
-from app.service.user import get_current_user_safe
+from app.service.authenticate import authenticate_user, create_access_token
+from app.service.authenticate import get_current_user_safe
 from app.models.user import User
 from fastapi import Depends, APIRouter, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from data.database import fake_users_db
 from datetime import timedelta
 
-router = APIRouter(prefix='api')
+router = APIRouter(prefix='/api')
 
 @router.post('/token') # 登录
 def login_for_access_token(form_data: Annotated[OAuth2PasswordRequestForm, Depends(OAuth2PasswordRequestForm)]):

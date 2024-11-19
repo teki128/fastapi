@@ -1,6 +1,5 @@
 from enum import Enum
 from sqlmodel import SQLModel, Field
-from app.models.section import Section
 
 
 class OddEvenEnum(str, Enum):
@@ -19,7 +18,7 @@ class Weekday(int, Enum):
 
 class ScheduleBase(SQLModel):
     id: int = Field(primary_key=True)
-    section_id: int = Field(foreign_key=Section.id)
+    section_id: int = Field(foreign_key='section.id')
 
 class Schedule(ScheduleBase, table=True):
     week_start: int = Field()
