@@ -15,3 +15,5 @@ app/config/*.json
 /app/test/
 
 /test/
+
+.idea
