@@ -7,8 +7,7 @@ router = APIRouter()
 
 @router.post('/user/', response_model=UserPublic)
 def create_user(user_not_safe: UserCreate, session: SessionDep) -> UserPublic:
-    user: User = user_not_safe
-    user.hashed_password = hash_password(user_not_safe.raw_password)
+    user = user_not_safe.to_user(hash_password(user_not_safe.raw_password))
     db_user = User.model_validate(user)
     session.add(db_user)
     session.commit()
@@ -25,6 +24,14 @@ def delete_user(user_id: int, session: SessionDep):
     session.commit()
 
 @router.get('/user/{user_id}', response_model=UserPublic)
+def read_user_safe(user_id: int, session: SessionDep):
+    db_user = session.get(User, user_id)
+    if not db_user: 
+        raise HTTPException(status_code=404, detail='User not found')
+    
+    return db_user
+
+@router.get('/user/unsafe/{user_id}', response_model=User)
 def read_user(user_id: int, session: SessionDep):
     db_user = session.get(User, user_id)
     if not db_user: 

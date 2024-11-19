@@ -22,6 +22,18 @@ class UserCreate(UserBase):
     raw_password: str = Field(min_length=6)
     college_id: Union[int, None] = Field(foreign_key='college.id', default=None)
 
+    def to_user(self, hashed_password: str) -> User:
+        return User(
+            id=self.id,
+            username=self.username,
+            is_admin=self.is_admin,
+            hashed_password=hashed_password,
+            question=None,
+            hashed_answer=None,
+            tele=None,
+            college_id=self.college_id
+        )
+
 
 class UserUpdate(UserBase):
     raw_password: Union[str, None] = Field(min_length=6, default=None)

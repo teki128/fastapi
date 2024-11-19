@@ -13,3 +13,5 @@ app/config/*.json
 /docs/password.txt
 
 /app/test/
+
+/test/
