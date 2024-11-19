@@ -18,7 +18,15 @@ class LessonBase(SQLModel):
 
 class Lesson(LessonBase, table=True):
     college_id: int = Field(foreign_key=College.id)
-    credit: int
+    credit: int #学分
     study_time: int
     importance: ImportanceEnum = Field(default=ImportanceEnum.HIGH) 
+    exam_type: ExamEnum = Field(default=ExamEnum.EXAM)
+
+class LessonCreate(Lesson):
+    name: str = Field(index=True)
+    college_id: int = Field(foreign_key=College.id)
+    credit: int
+    study_time: int
+    importance: ImportanceEnum = Field(default=ImportanceEnum.HIGH)
     exam_type: ExamEnum = Field(default=ExamEnum.EXAM)

@@ -1,38 +1,34 @@
-from app.models.classroom import Classroom
-from app.db.session import engine
+from app.models.classroom import Classroom, ClassroomCreate
+from app.db.session import SessionDep
 from fastapi import FastAPI, HTTPException
-from sqlmodel import Session, select
+from sqlmodel import select
 
-app = FastAPI()
+router = FastAPI()
 
-@app.post("/classrooms/", response_model=Classroom)
-def create_classroom(classroom: Classroom) -> Classroom:
-    with Session(engine) as session:
-        session.add(classroom)
-        session.commit()
-        session.refresh(classroom)
-        return classroom
+@router.post("/classroom/", response_model=Classroom)
+def create_classroom(classroom_not_safe: ClassroomCreate, session: SessionDep) -> Classroom:
+    db_classroom = classroom_not_safe.model_validate()
+    session.add(db_classroom)
+    session.commit()
+    session.refresh(db_classroom)
+    return db_classroom
 
-@app.get("/classrooms/", response_model=list[Classroom])
-def read_classrooms():
-    with Session(engine) as session:
-        classrooms = session.exec(select(Classroom)).all()
-        return classrooms
+@router.get("/classroom/", response_model=list[Classroom])
+def read_classrooms(session: SessionDep):
+    db_classrooms = session.exec(select(Classroom)).all()
+    return db_classrooms
 
-@app.get("/classrooms/{classroom_id}", response_model=Classroom)
-def read_classroom(classroom_id: int):
-    with Session(engine) as session:
-        classroom = session.get(Classroom, classroom_id)
-        if not classroom:
-            raise HTTPException(status_code=404, detail="Classroom not found")
-        return classroom
+@router.get("/classroom/{classroom_id}", response_model=Classroom)
+def read_classroom(classroom_id: int, session: SessionDep):
+    db_classroom = session.get(Classroom, classroom_id)
+    if not db_classroom:
+        raise HTTPException(status_code=404, detail="Classroom not found")
+    return db_classroom
 
-@app.delete("/classrooms/{classroom_id}")
-def delete_classroom(classroom_id: int):
-    with Session(engine) as session:
-        classroom = session.get(Classroom, classroom_id)
-        if not classroom:
-            raise HTTPException(status_code=404, detail="Classroom not found")
-        session.delete(classroom)
-        session.commit()
-        return {"ok": True}
+@router.delete("/classroom/{classroom_id}", status_code=204)
+def delete_classroom(classroom_id: int, session: SessionDep):
+    db_classroom = session.get(Classroom, classroom_id)
+    if not db_classroom:
+        raise HTTPException(status_code=404, detail="Classroom not found")
+    session.delete(db_classroom)
+    session.commit()

@@ -9,3 +9,7 @@ class Classroom(ClassroomBase, table=True):
 
 class ClassroomPublic(ClassroomBase):
     pass
+
+class ClassroomCreate(Classroom):
+    building: str
+    room: str

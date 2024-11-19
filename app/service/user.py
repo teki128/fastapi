@@ -2,6 +2,7 @@ from fastapi import APIRouter, HTTPException
 from app.models.user import *
 from app.utils.authenciate import hash_password
 from app.db.session import SessionDep
+from sqlmodel import select
 
 router = APIRouter()
 
@@ -23,6 +24,13 @@ def delete_user(user_id: int, session: SessionDep):
     
     session.delete(db_user)
     session.commit()
+
+
+@router.get('/user/{user_id}', response_model=list[UserPublic])
+def read_users(session: SessionDep):
+    db_users = session.exec(select(User)).all()
+    return db_users
+
 
 @router.get('/user/{user_id}', response_model=UserPublic)
 def read_user(user_id: int, session: SessionDep):
