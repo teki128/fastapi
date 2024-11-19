@@ -1,9 +1,8 @@
 from sqlmodel import SQLModel, Field
 from typing import Union
-from app.models.college import College
 
 class UserBase(SQLModel):
-    id: str = Field(primary_key=True) # TODO: id改为int，token跟随改
+    id: int = Field(primary_key=True) # TODO: id改为int，token跟随改
     username : str = Field(index=True)
     is_admin: bool = Field(default=False)
 
@@ -12,16 +11,28 @@ class User(UserBase, table=True):
     question: Union[str, None] = Field(default=None)
     hashed_answer: Union[str, None] = Field(default=None)
     tele: Union[int, None] = Field(default=None)
-    college_id: Union[int, None] = Field(foreign_key=College.id, default=None)
+    college_id: Union[int, None] = Field(foreign_key='college.id', default=None)
 
 class UserPublic(UserBase):
     tele: Union[int, None] = Field(default=None)
-    college_id: int = Field(foreign_key=College.id)
+    college_id: int = Field(foreign_key='college.id')
 
 
 class UserCreate(UserBase):
     raw_password: str = Field(min_length=6)
-    college_id: Union[int, None] = Field(foreign_key=College.id, default=None)
+    college_id: Union[int, None] = Field(foreign_key='college.id', default=None)
+
+    def to_user(self, hashed_password: str) -> User:
+        return User(
+            id=self.id,
+            username=self.username,
+            is_admin=self.is_admin,
+            hashed_password=hashed_password,
+            question=None,
+            hashed_answer=None,
+            tele=None,
+            college_id=self.college_id
+        )
 
 
 class UserUpdate(UserBase):
@@ -29,7 +40,7 @@ class UserUpdate(UserBase):
     question: Union[str, None] = Field(default=None)
     raw_answer: Union[str, None] = Field(default=None)
     tele: Union[int, None] = Field(default=None)
-    college_id: Union[int, None] = Field(foreign_key=College.id, default=None)
+    college_id: Union[int, None] = Field(foreign_key='college.id', default=None)
 
 
 
