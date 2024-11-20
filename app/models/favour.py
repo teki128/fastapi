@@ -8,6 +8,6 @@ class FavourBase(SQLModel):
 class Favour(FavourBase, table=True):
     pass
 
-class FavourCreate(Favour):
-    user_id: int = Field(primary_key=True, foreign_key=User.id)
-    section_id: int = Field(primary_key=True, foreign_key=Section.id)
+class FavourCreate(FavourBase):
+    user_id: int = Field(primary_key=True, foreign_key='user.id')
+    section_id: int = Field(primary_key=True, foreign_key='section.id')

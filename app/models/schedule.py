@@ -17,10 +17,10 @@ class Weekday(int, Enum):
     SUN = 0
 
 class ScheduleBase(SQLModel):
-    id: int = Field(primary_key=True)
     section_id: int = Field(foreign_key='section.id')
 
 class Schedule(ScheduleBase, table=True):
+    id: int = Field(primary_key=True)
     week_start: int = Field()
     week_end: int = Field()
     weekday: Weekday = Field()

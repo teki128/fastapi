@@ -1,7 +1,6 @@
 import httpx
 from app.models.user import User, UserPublic
 from app.models.token import TokenData
-from app.service.user import read_user, read_user_safe
 from typing import Union, Annotated
 from fastapi import Depends, HTTPException, status
 from fastapi.security import OAuth2PasswordBearer
@@ -32,8 +31,7 @@ async def get_user_safe(id) -> UserPublic:
         return False
     user_safe = UserPublic(**user_data)
     return user_safe
-    # FIXME: 改这里
-# # 获取user
+# 获取user
 
 def create_access_token(token: dict, expire_delta: Union[timedelta, None] = None):
     raw_access_token = token.copy()
@@ -69,7 +67,6 @@ async def decode_token_safe(token):
         return False
     
     user_safe = await get_user_safe(token_data.id)
-    # FIXME: models/token.token_data设为int报错，暂设为str
     return user_safe
 
 

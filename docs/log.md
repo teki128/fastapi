@@ -39,3 +39,4 @@ app/models/schedule.py: 更改此表为课序安排表。
 
 app/models/*.py: 修改正确格式的 foreign key
 app/db/session.py: import 了遗漏的数据 model
+app/service/authenticate.py: 读取数据源从 dict 改变到 database 中

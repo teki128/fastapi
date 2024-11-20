@@ -7,6 +7,5 @@ class TeachBase(SQLModel):
 class Teach(TeachBase, table=True):
     pass
 
-class TeachCreate(Teach):
-    teacher_id: int = Field(primary_key=True, foreign_key=Teacher.id)
-    section_id: int = Field(primary_key=True, foreign_key=Section.id)
+class TeachCreate(TeachBase):
+    pass

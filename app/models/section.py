@@ -13,7 +13,7 @@ class Section(SectionBase, table=True):
     info: Union[str, None] = Field(default=None)
     classroom_id: int = Field(foreign_key='classroom.id')
 
-class SectionCreate(Section):
+class SectionCreate(SectionBase):
     capacity: int = Field(le=0, ge=200)
     info: Union[str, None] = Field(default=None)
     classroom_id: int = Field(foreign_key='classroom.id')

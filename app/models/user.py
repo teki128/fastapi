@@ -2,7 +2,7 @@ from sqlmodel import SQLModel, Field
 from typing import Union
 
 class UserBase(SQLModel):
-    id: int = Field(primary_key=True) # TODO: id改为int，token跟随改
+    id: int = Field(primary_key=True)
     username : str = Field(index=True)
     is_admin: bool = Field(default=False)
 
