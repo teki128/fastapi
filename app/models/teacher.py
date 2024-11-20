@@ -7,3 +7,6 @@ class TeacherBase(SQLModel):
 
 class Teacher(TeacherBase, table=True):
     college_id: int = Field(foreign_key=College.id)
+
+class TeacherCreate(Teacher):
+    pass

@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field
-
+#教室表 增删查
 class ClassroomBase(SQLModel):
     building: str
     room: str
@@ -10,6 +10,9 @@ class Classroom(ClassroomBase, table=True):
 class ClassroomPublic(ClassroomBase):
     pass
 
-class ClassroomCreate(Classroom):
-    building: str
-    room: str
+class ClassroomCreate(ClassroomBase):
+    pass
+
+class ClassroomUpdate(ClassroomBase):
+    pass
+
