@@ -10,3 +10,6 @@ class Course(CourseBase, table=True):
 
 class CourseCreate(CourseBase):
     pass
+
+class CoursePublic(CourseBase):
+    pass
