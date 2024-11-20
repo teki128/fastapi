@@ -1,7 +1,5 @@
 from enum import Enum
 from sqlmodel import SQLModel, Field
-from app.models.section import Section
-from sqlalchemy import Column, Integer, Sequence
 
 
 class OddEvenEnum(str, Enum):
@@ -19,10 +17,10 @@ class Weekday(int, Enum):
     SUN = 0
 
 class ScheduleBase(SQLModel):
-    id: int = Field(primary_key=True, sa_column=Column(Integer, Sequence("notice_sn", start=1, increment=1), unique=True))
-    section_id: int = Field(foreign_key=Section.id)
+    section_id: int = Field(foreign_key='section.id')
 
 class Schedule(ScheduleBase, table=True):
+    id: int = Field(primary_key=True)
     week_start: int = Field()
     week_end: int = Field()
     weekday: Weekday = Field()
@@ -31,7 +29,7 @@ class Schedule(ScheduleBase, table=True):
     period_end: int = Field()
 
 class ScheduleCreate(Schedule):
-    section_id: int = Field(foreign_key=Section.id)
+    section_id: int = Field(foreign_key='section.id')
     week_start: int = Field()
     week_end: int = Field()
     weekday: Weekday = Field()

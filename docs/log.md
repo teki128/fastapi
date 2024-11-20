@@ -32,3 +32,11 @@ app/models/schedule.py: 添加了课程容量的字段
 app/models/classroom.py, course.py, favour.py, teach.py: 添加了遗漏的字段。
 app/models/section.py: 新增表，此表为课序信息表。
 app/models/schedule.py: 更改此表为课序安排表。
+
+## 2024.11.19
+
+### fix
+
+app/models/*.py: 修改正确格式的 foreign key
+app/db/session.py: import 了遗漏的数据 model
+app/service/authenticate.py: 读取数据源从 dict 改变到 database 中

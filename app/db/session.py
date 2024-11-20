@@ -1,5 +1,15 @@
 from sqlmodel import SQLModel, Session, create_engine
 from app.models.user import *
+from app.models.college import *
+from app.models.classroom import *
+from app.models.course import *
+from app.models.favour import *
+from app.models.notice import *
+from app.models.schedule import *
+from app.models.lesson import *
+from app.models.section import *
+from app.models.teach import *
+from app.models.teacher import *
 from fastapi import Depends
 from typing import Annotated
 from app.config.db import DBURL
