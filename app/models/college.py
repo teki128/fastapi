@@ -1,6 +1,6 @@
 from sqlmodel import SQLModel, Field
 
-#大学表 查
+#系表 查
 class CollegeBase(SQLModel):
     name: str = Field(index=True)
 

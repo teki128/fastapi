@@ -1,5 +1,5 @@
 from sqlmodel import SQLModel, Field
-#教室表 增删查
+#教室表 查
 class ClassroomBase(SQLModel):
     building: str
     room: str

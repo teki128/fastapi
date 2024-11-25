@@ -1,22 +1,27 @@
 from sqlmodel import SQLModel, Field
-from typing import Union
-from sqlalchemy import Column, Integer, Sequence
+from typing import Optional
 
-#课序号
+#课序号 增删查改
 class SectionBase(SQLModel):
-    sn: int = Field()
+    sn: int
     lesson_id: int = Field(foreign_key='lesson.id')
+    capacity: int = Field(le=0, ge=200)
+    info: Optional[str]
+    classroom_id: int = Field(foreign_key='classroom.id')
 
 class Section(SectionBase, table=True):
     id: int = Field(primary_key=True)
-    capacity: int = Field()
-    info: Union[str, None] = Field(default=None)
-    classroom_id: int = Field(foreign_key='classroom.id')
+
 
 class SectionCreate(SectionBase):
-    capacity: int = Field(le=0, ge=200)
-    info: Union[str, None] = Field(default=None)
-    classroom_id: int = Field(foreign_key='classroom.id')
-    lesson_id: int = Field(foreign_key='lesson.id')
+    pass
 
+class SectionPublic(SectionBase):
+    pass
+
+class SectionUpdate(SectionBase):
+    sn: Optional[int]
+    capacity: Optional[int] = Field(le=0, ge=200)
+    info: Optional[str]
+    classroom_id: Optional[int] = Field(foreign_key='classroom.id')
 
