@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from app.core.lifespan import lifespan
+from app.routers import user
 from app.service.router import generate_crud_routes
 
 from app.models.lesson import Lesson, LessonCreate, LessonUpdate, LessonPublic
@@ -80,3 +81,4 @@ app.include_router(
     ),
 )
 
+app.include_router(user.router)
