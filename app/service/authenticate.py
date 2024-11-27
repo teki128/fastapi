@@ -29,6 +29,7 @@ async def get_user_safe(id) -> UserPublic:
         user_data = response.json()
     else:
         return False
+    
     user_safe = UserPublic(**user_data)
     return user_safe
 # 获取user

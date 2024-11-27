@@ -19,12 +19,12 @@ class Weekday(int, Enum):
 
 class ScheduleBase(SQLModel):
     section_id: int = Field(foreign_key='section.id')
-    week_start: int = Field(le=1, ge=18)
-    week_end: int = Field(le=1, ge=18)
+    week_start: int = Field(le=18, ge=1)
+    week_end: int = Field(le=18, ge=1)
     weekday: Weekday = Field()
     odd_or_even: OddEvenEnum = Field(OddEvenEnum.NORMAL)
-    period_start: int = Field(le=1, ge=12)
-    period_end: int = Field(le=1, ge=12)
+    period_start: int = Field(le=12, ge=1)
+    period_end: int = Field(le=12, ge=1)
 
 class Schedule(ScheduleBase, table=True):
     id: int = Field(primary_key=True)

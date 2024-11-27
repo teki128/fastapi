@@ -25,7 +25,7 @@ def delete_user(user_id: int, session: SessionDep):
     session.commit()
 
 
-@router.get('/user/{user_id}', response_model=list[UserPublic])
+@router.get('/user/', response_model=list[UserPublic])
 def read_users(session: SessionDep):
     db_users = session.exec(select(User)).all()
     return db_users

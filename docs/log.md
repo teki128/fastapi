@@ -40,3 +40,11 @@ app/models/schedule.py: 更改此表为课序安排表。
 app/models/*.py: 修改正确格式的 foreign key
 app/db/session.py: import 了遗漏的数据 model
 app/service/authenticate.py: 读取数据源从 dict 改变到 database 中
+
+## 2024.11.27
+
+### fix
+
+app/models/schedule.py, section.py: 修改了字段 le, ge 的错误
+app/models/user.py: 添加了用户名的字段
+app/service/user.py: 修改了 read_all_user 错误的路由

@@ -5,7 +5,7 @@ from typing import Optional
 class SectionBase(SQLModel):
     sn: int
     lesson_id: int = Field(foreign_key='lesson.id')
-    capacity: int = Field(le=0, ge=200)
+    capacity: int = Field(ge=0, le=200)
     info: Optional[str]
     classroom_id: int = Field(foreign_key='classroom.id')
 

@@ -41,8 +41,6 @@ def generate_crud_routes(
 
     @router.get(f"/{model_name}/{{obj_id}}", response_model=public_model)
     def read(obj_id: int, session: SessionDep):
-        print('test')
-        print(obj_id)
         return crud.read(session, obj_id)
 
     if not read_only and not no_update:
