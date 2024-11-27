@@ -1,13 +1,12 @@
-from fastapi import APIRouter, HTTPException
-from app.models.user import *
-from app.utils.authenciate import hash_password
-from app.db.session import SessionDep
+from fastapi import HTTPException
 from sqlmodel import select
 
-router = APIRouter()
+from app.models.user import *
+from app.utils.authenciate import hash_password
+from app.db.session import Session
 
-@router.post('/user/', response_model=UserPublic)
-def create_user(user_not_safe: UserCreate, session: SessionDep) -> UserPublic:
+
+def create_user(user_not_safe: UserCreate, session: Session) -> UserPublic:
     user = user_not_safe.to_user(hash_password(user_not_safe.raw_password))
     db_user = User.model_validate(user)
     session.add(db_user)
@@ -15,8 +14,7 @@ def create_user(user_not_safe: UserCreate, session: SessionDep) -> UserPublic:
     session.refresh(db_user)
     return db_user
 
-@router.delete('/user/{user_id}', status_code=204)
-def delete_user(user_id: int, session: SessionDep): 
+def delete_user(user_id: int, session: Session): 
     db_user = session.get(User, user_id)
     if not db_user:
         raise HTTPException(status_code=404, detail="User not found")
@@ -25,30 +23,17 @@ def delete_user(user_id: int, session: SessionDep):
     session.commit()
 
 
-@router.get('/user/', response_model=list[UserPublic])
-def read_users(session: SessionDep):
+def read_users(session: Session):
     db_users = session.exec(select(User)).all()
     return db_users
 
-
-@router.get('/user/{user_id}', response_model=UserPublic)
-def read_user_safe(user_id: int, session: SessionDep):
+def read_user(user_id: int, session: Session):
     db_user = session.get(User, user_id)
     if not db_user: 
         raise HTTPException(status_code=404, detail='User not found')
-    
     return db_user
 
-@router.get('/user/unsafe/{user_id}', response_model=User)
-def read_user(user_id: int, session: SessionDep):
-    db_user = session.get(User, user_id)
-    if not db_user: 
-        raise HTTPException(status_code=404, detail='User not found')
-    
-    return db_user
-
-@router.patch('/user/{user_id}', response_model=UserPublic)
-def update_user(user_id: int, new_user_not_safe: UserUpdate, session: SessionDep) -> UserPublic:
+def update_user(user_id: int, new_user_not_safe: UserUpdate, session: Session) -> UserPublic:
     db_user = session.get(User, user_id)
     if not db_user: 
         raise HTTPException(status_code=404, detail='User not found')

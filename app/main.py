@@ -77,6 +77,4 @@ app.include_router(
     ),
 )
 
-
 app.include_router(user.router)
-app.include_router(user_crud.router)

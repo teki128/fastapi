@@ -48,3 +48,6 @@ app/service/authenticate.py: 读取数据源从 dict 改变到 database 中
 app/models/schedule.py, section.py: 修改了字段 le, ge 的错误
 app/models/user.py: 添加了用户名的字段
 app/service/user.py: 修改了 read_all_user 错误的路由
+
+app/service/authenticate.py, user.py
+app/routers/user.py: 隐藏了 user 的路由

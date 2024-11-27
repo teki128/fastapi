@@ -5,6 +5,9 @@ class UserBase(SQLModel):
     id: int = Field(primary_key=True) # FIXME: id int存不下学号，需改为BIGINT对应的类型
     name: str
     
+class UserPublic(UserBase):
+    college_id: int = Field(foreign_key='college.id')
+    is_admin: bool = Field(default=False)
 
 class User(UserBase, table=True):
     hashed_password: str
@@ -14,9 +17,13 @@ class User(UserBase, table=True):
     college_id: Optional[int] = Field(foreign_key='college.id', default=None)
     is_admin: bool = Field(default=False)
 
-class UserPublic(UserBase):
-    college_id: int = Field(foreign_key='college.id')
-    is_admin: bool = Field(default=False)
+    def to_user(self) -> UserPublic:
+        return User(
+            id=self.id,
+            name=self.name,
+            is_admin=self.is_admin,
+            college_id=self.college_id
+        )
 
 
 class UserCreate(UserBase):
