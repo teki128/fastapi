@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from typing import Type, TypeVar
 from app.db.session import SessionDep
 from sqlmodel import SQLModel
-from app.service.crud import CRUDBase, CRUDOnlyRead, CRUDNoUpdate
+from app.service.crud import CRUDBase, CRUDOnlyRead, CRUDNoUpdate, CRUDUser
 
 ModelType = TypeVar("ModelType", bound=SQLModel)
 CreateSchemaType = TypeVar("CreateSchemaType")
@@ -17,11 +17,14 @@ def generate_crud_routes(
     public_model: Type[PublicSchemaType],
     model_name: str,
     read_only: bool = False,
-    no_update: bool = False
+    no_update: bool = False,
+    user: bool = False
 ) -> APIRouter:
     router = APIRouter()
 
-    if read_only:
+    if user:
+        crud = CRUDUser(model, create_model, update_model, public_model)
+    elif read_only:
         crud = CRUDOnlyRead(model, create_model, update_model, public_model)
     elif no_update:
         crud = CRUDNoUpdate(model, create_model, update_model, public_model)
@@ -33,6 +36,7 @@ def generate_crud_routes(
         def create(
             obj_in: create_model, session: SessionDep
         ):
+
             return crud.create(session, obj_in)
 
     @router.get(f"/{model_name}/", response_model=list[public_model])
