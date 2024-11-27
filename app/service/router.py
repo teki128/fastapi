@@ -15,29 +15,17 @@ def generate_crud_routes(
     create_model: Type[CreateSchemaType],
     update_model: Type[UpdateSchemaType],
     public_model: Type[PublicSchemaType],
+    crud: CRUDBase,
     model_name: str,
-    read_only: bool = False,
-    no_update: bool = False,
-    user: bool = False
 ) -> APIRouter:
     router = APIRouter()
 
-    if user:
-        crud = CRUDUser(model, create_model, update_model, public_model)
-    elif read_only:
-        crud = CRUDOnlyRead(model, create_model, update_model, public_model)
-    elif no_update:
-        crud = CRUDNoUpdate(model, create_model, update_model, public_model)
-    else:
-        crud = CRUDBase(model, create_model, update_model, public_model)
+    @router.post(f"/{model_name}/", response_model=public_model)
+    def create(
+        obj_in: create_model, session: SessionDep
+    ):
 
-    if not read_only:
-        @router.post(f"/{model_name}/", response_model=public_model)
-        def create(
-            obj_in: create_model, session: SessionDep
-        ):
-
-            return crud.create(session, obj_in)
+        return crud.create(session, obj_in)
 
     @router.get(f"/{model_name}/", response_model=list[public_model])
     def read_all(session: SessionDep):
@@ -47,16 +35,14 @@ def generate_crud_routes(
     def read(obj_id: int, session: SessionDep):
         return crud.read(session, obj_id)
 
-    if not read_only and not no_update:
-        @router.put(f"/{model_name}/{{obj_id}}", response_model=public_model)
-        def update(
-            obj_id: int, obj_in: update_model, session: SessionDep
-        ):
-            return crud.update(session, obj_id, obj_in)
+    @router.put(f"/{model_name}/{{obj_id}}", response_model=public_model)
+    def update(
+        obj_id: int, obj_in: update_model, session: SessionDep
+    ):
+        return crud.update(session, obj_id, obj_in)
 
-    if not read_only:
-        @router.delete(f"/{model_name}/{{obj_id}}", status_code=204)
-        def delete(obj_id: int, session: SessionDep):
-            crud.delete(session, obj_id)
+    @router.delete(f"/{model_name}/{{obj_id}}", status_code=204)
+    def delete(obj_id: int, session: SessionDep):
+        crud.delete(session, obj_id)
 
     return router
