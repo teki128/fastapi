@@ -1,6 +1,4 @@
 from fastapi import FastAPI
-from app.routers import user
-from app.service import user as user_crud
 from app.core.lifespan import lifespan
 from app.service.router import generate_crud_routes
 
@@ -14,8 +12,13 @@ from app.models.schedule import Schedule, ScheduleCreate, ScheduleUpdate, Schedu
 from app.models.section import Section, SectionCreate, SectionUpdate, SectionPublic
 from app.models.teacher import Teacher, TeacherCreate, TeacherUpdate, TeacherPublic
 from app.models.teach import Teach, TeachCreate, TeachUpdate, TeachPublic
+from app.models.user import User, UserCreate, UserUpdate, UserPublic
 
 app = FastAPI(lifespan=lifespan)
+
+app.include_router(
+    generate_crud_routes(User, UserCreate, UserUpdate, UserPublic, "user", user=True)
+)
 
 app .include_router(
     generate_crud_routes(
@@ -77,4 +80,3 @@ app.include_router(
     ),
 )
 
-app.include_router(user.router)
