@@ -25,7 +25,7 @@ def generate_crud_routes(
         obj_in: create_model, session: SessionDep
     ):
 
-        return crud.create(session, obj_in)
+        return crud.create(obj_in, session)
 
     @router.get(f"/{model_name}/", response_model=list[public_model])
     def read_all(session: SessionDep):
@@ -33,16 +33,16 @@ def generate_crud_routes(
 
     @router.get(f"/{model_name}/{{obj_id}}", response_model=public_model)
     def read(obj_id: int, session: SessionDep):
-        return crud.read(session, obj_id)
+        return crud.read(obj_id, session)
 
     @router.put(f"/{model_name}/{{obj_id}}", response_model=public_model)
     def update(
         obj_id: int, obj_in: update_model, session: SessionDep
     ):
-        return crud.update(session, obj_id, obj_in)
+        return crud.update(obj_id, obj_in, session)
 
     @router.delete(f"/{model_name}/{{obj_id}}", status_code=204)
     def delete(obj_id: int, session: SessionDep):
-        crud.delete(session, obj_id)
+        crud.delete(obj_id, session)
 
     return router

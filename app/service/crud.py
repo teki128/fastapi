@@ -17,7 +17,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType, PublicSche
         self.update_model = update_model
         self.public_model = public_model
 
-    def create(self, db: SessionDep, obj_in: CreateSchemaType) -> PublicSchemaType:
+    def create(self, obj_in: CreateSchemaType, db: SessionDep) -> PublicSchemaType:
         validated_obj = self.create_model.model_validate(obj_in)
         db_obj = self.model(**validated_obj.dict())
         db.add(db_obj)
@@ -28,20 +28,20 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType, PublicSche
     def read_all(self, db: SessionDep) -> list[PublicSchemaType]:
         return db.exec(select(self.model)).all()
 
-    def read(self, db: SessionDep, obj_id: int) -> PublicSchemaType:
+    def read(self, obj_id: int, db: SessionDep) -> PublicSchemaType:
         db_obj = db.get(self.model, obj_id)
         if not db_obj:
             raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
         return db_obj
 
-    def delete(self, db: SessionDep, obj_id: int) -> None:
+    def delete(self, obj_id: int, db: SessionDep) -> None:
         db_obj = db.get(self.model, obj_id)
         if not db_obj:
             raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
         db.delete(db_obj)
         db.commit()
 
-    def update(self, db: SessionDep, obj_id: int, obj_in: UpdateSchemaType) -> PublicSchemaType:
+    def update(self, obj_id: int, obj_in: UpdateSchemaType, db: SessionDep) -> PublicSchemaType:
         db_obj = db.get(self.model, obj_id)
         if not db_obj:
             raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
@@ -56,23 +56,23 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType, PublicSche
 
 
 class CRUDNoUpdate(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, PublicSchemaType]):
-    def update(self, db: SessionDep, obj_id: int, obj_in: UpdateSchemaType) -> PublicSchemaType:
+    def update(self, obj_id: int, obj_in: UpdateSchemaType, db: SessionDep) -> PublicSchemaType:
         raise HTTPException(status_code=405, detail="Update operation is not allowed for this model")
 
 
 class CRUDOnlyRead(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, PublicSchemaType]):
-    def create(self, db: SessionDep, obj_in: CreateSchemaType) -> PublicSchemaType:
+    def create(self, obj_in: CreateSchemaType, db: SessionDep) -> PublicSchemaType:
         raise HTTPException(status_code=405, detail="Create operation is not allowed for this model")
 
-    def update(self, db: SessionDep, obj_id: int, obj_in: UpdateSchemaType) -> PublicSchemaType:
+    def update(self, obj_id: int, obj_in: UpdateSchemaType, db: SessionDep) -> PublicSchemaType:
         raise HTTPException(status_code=405, detail="Update operation is not allowed for this model")
 
-    def delete(self, db: SessionDep, obj_id: int) -> None:
+    def delete(self, obj_id: int, db: SessionDep) -> None:
         raise HTTPException(status_code=405, detail="Delete operation is not allowed for this model")
 
 
 class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, PublicSchemaType]):
-    def create(self, db: SessionDep, obj_in: CreateSchemaType) -> PublicSchemaType:
+    def create(self, obj_in: CreateSchemaType, db: SessionDep) -> PublicSchemaType:
         validated_obj = self.create_model.model_validate(obj_in)
         obj = validated_obj.to_user(hash_password(validated_obj.raw_password))
         db_obj = self.model(**obj.dict())
@@ -81,7 +81,7 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, PublicSch
         db.refresh(db_obj)
         return db_obj
 
-    def update(self, db: SessionDep, obj_id: int, obj_in: UpdateSchemaType) -> PublicSchemaType:
+    def update(self, obj_id: int, obj_in: UpdateSchemaType, db: SessionDep) -> PublicSchemaType:
         db_obj = db.get(self.model, obj_id)
         if not db_obj:
             raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")

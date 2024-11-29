@@ -11,6 +11,7 @@ from app.models.section import Section, SectionCreate, SectionUpdate, SectionPub
 from app.models.teacher import Teacher, TeacherCreate, TeacherUpdate, TeacherPublic
 from app.models.teach import Teach, TeachCreate, TeachUpdate, TeachPublic
 
+# 以下
 user_crud = CRUDUser(User, UserCreate, UserUpdate, UserPublic)
 lesson_crud = CRUDNoUpdate(Lesson, LessonCreate, LessonUpdate, LessonPublic)
 college_crud = CRUDOnlyRead(College, CollegeCreate, CollegeUpdate, CollegePublic)
