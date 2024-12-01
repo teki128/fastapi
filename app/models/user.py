@@ -17,14 +17,6 @@ class User(UserBase, table=True):
     college_id: Optional[int] = Field(foreign_key='college.id', default=None)
     is_admin: bool = Field(default=False)
 
-    def to_user(self) -> UserPublic:
-        return User(
-            id=self.id,
-            name=self.name,
-            is_admin=self.is_admin,
-            college_id=self.college_id
-        )
-
 
 class UserCreate(UserBase):
     raw_password: str = Field(min_length=6)

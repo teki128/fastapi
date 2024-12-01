@@ -14,6 +14,8 @@ from app.models.teacher import Teacher, TeacherCreate, TeacherUpdate, TeacherPub
 from app.models.teach import Teach, TeachCreate, TeachUpdate, TeachPublic
 from app.service.model_crud import user_crud, lesson_crud, college_crud, classroom_crud, course_crud, favour_crud, notice_crud, schedule_crud, section_crud, teacher_crud, teach_crud
 
+from app.routers.user import router as user_router
+from app.routers.notice import router as notice_router
 
 app = FastAPI(lifespan=lifespan)
 
@@ -61,3 +63,5 @@ app.include_router(
     generate_crud_routes(Teacher, TeacherCreate, TeacherUpdate, TeacherPublic, teacher_crud, "teacher")
 )
 
+app.include_router(user_router)
+app.include_router(notice_router)

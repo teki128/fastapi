@@ -5,7 +5,7 @@ import jwt
 from datetime import timedelta, datetime, timezone
 from jwt.exceptions import InvalidTokenError
 
-from app.models.user import User
+from app.models.user import User, UserPublic
 from app.models.token import TokenData
 from app.config.config import SECRET_KEY, ALGORITHM
 from app.utils.authenciate import verify_password
@@ -57,6 +57,11 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], sessio
     return user
 
 
+async def get_current_admin(current_user: Annotated[UserPublic, Depends(get_current_user)]):
+    if not current_user.is_admin:
+        raise HTTPException(status_code=403, detail="You are not an admin.")
+    return current_user
+
 async def authenticate_user(user_id: int, password: str, session: Session):
     user = await user_crud.read(user_id, session)
     if not user:
@@ -64,3 +69,4 @@ async def authenticate_user(user_id: int, password: str, session: Session):
     if not verify_password(password, user.hashed_password):
         return False
     return user
+

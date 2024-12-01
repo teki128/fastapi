@@ -51,3 +51,10 @@ app/service/user.py: 修改了 read_all_user 错误的路由
 
 app/service/authenticate.py, user.py
 app/routers/user.py: 隐藏了 user 的路由
+
+## 2024.12.1
+
+### feature
+
+app/routers/notice.py
+app/service/authenciate.py: 完成 notice 的 router 和管理员权限认证
