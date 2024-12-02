@@ -3,9 +3,9 @@ from fastapi import Depends, APIRouter
 
 from app.service.authenticate import get_current_user, get_current_admin
 from app.models.notice import *
+from app.models.user import UserPublic
 from app.service.model_crud import notice_crud
-
-from app.db.session import *
+from app.db.session import SessionDep
 
 router = APIRouter(prefix='/api')
 

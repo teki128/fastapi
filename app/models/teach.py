@@ -1,11 +1,13 @@
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, UniqueConstraint
 #教师课程关联表 增删查
 class TeachBase(SQLModel):
-    teacher_id: int = Field(primary_key=True, foreign_key='teacher.id')
-    section_id: int = Field(primary_key=True, foreign_key='section.id')
+    teacher_id: int = Field(foreign_key='teacher.id')
+    section_id: int = Field(foreign_key='section.id')
 
 class Teach(TeachBase, table=True):
-    pass
+    id: int = Field(primary_key=True)
+
+    __table_args__ = (UniqueConstraint('teacher_id', 'section_id', name='uix_teacher_section'),)
 
 class TeachCreate(TeachBase):
     pass
