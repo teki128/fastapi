@@ -9,7 +9,7 @@ from app.service.authenticate import get_current_user
 
 router = APIRouter(prefix='/api')
 
-@router.get('/teacher/{teacher_id}', response_model=TeacherPublic)
+@router.get('/teacher/{teacher_id}', response_model=TeacherPublic) # TODO: 重构所有的get型api路径，切换为Query型api
 async def read_teacher(teacher_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):
     return await teacher_crud.read(teacher_id, session)
 

@@ -25,7 +25,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType, PublicSche
         db.refresh(db_obj)
         return db_obj
 
-    async def read_all(self, db: SessionDep) -> list[PublicSchemaType]:
+    async def read_all(self, db: SessionDep) -> list[PublicSchemaType]: # TODO: 删除所有read_all方法
         return db.exec(select(self.model)).all()
 
     async def read(self, obj_id: int, db: SessionDep) -> PublicSchemaType:
@@ -38,7 +38,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType, PublicSche
         query = select(self.model)
         for key, value in attr.items():
             query = query.where(getattr(self.model, key) == value)
-        return db.exec(query).all()
+        return db.exec(query).all() # XXX: 看看 db 有没有相关的 filter 方法
 
     async def delete(self, obj_id: int, db: SessionDep) -> None:
         db_obj = db.get(self.model, obj_id)
