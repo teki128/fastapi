@@ -1,4 +1,4 @@
-from app.service.crud import CRUDBase, CRUDOnlyRead, CRUDNoUpdate, CRUDUser
+from app.service.crud import *
 from app.models.user import User, UserCreate, UserUpdate, UserPublic
 from app.models.lesson import Lesson, LessonCreate, LessonUpdate, LessonPublic
 from app.models.college import College, CollegeCreate, CollegeUpdate, CollegePublic

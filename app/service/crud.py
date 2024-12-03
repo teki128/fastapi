@@ -32,7 +32,13 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType, PublicSche
         db_obj = db.get(self.model, obj_id)
         if not db_obj:
             raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
-        return db_obj
+        return db_obj 
+    
+    async def read_by_dict(self, attr: dict, db: SessionDep) -> list[PublicSchemaType]:
+        query = select(self.model)
+        for key, value in attr.items():
+            query = query.where(getattr(self.model, key) == value)
+        return db.exec(query).all()
 
     async def delete(self, obj_id: int, db: SessionDep) -> None:
         db_obj = db.get(self.model, obj_id)
@@ -98,3 +104,4 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, PublicSch
         db.commit()
         db.refresh(db_obj)
         return db_obj
+
