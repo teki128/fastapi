@@ -1,5 +1,5 @@
-from typing import Annotated
-from fastapi import Depends, APIRouter
+from typing import Annotated, Optional
+from fastapi import Depends, Query, APIRouter
 
 from app.models.college import *
 from app.models.user import UserPublic
@@ -9,10 +9,16 @@ from app.service.authenticate import get_current_user
 
 router = APIRouter(prefix='/api')
 
-@router.get('/college/{college_id}', response_model=CollegePublic)
-async def read_college(college_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):
-    return await college_crud.read(college_id, session)
-
 @router.get('/college', response_model=list[CollegePublic])
-async def read_all_colleges(session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):
-    return await college_crud.read_all(session)
+async def filter_college(
+    session: SessionDep, 
+    current_user: Annotated[UserPublic, Depends(get_current_user)],
+    id: Annotated[Optional[int], Query()] = None,
+    name: Annotated[Optional[str], Query()] = None
+):
+    filters = {k: v for k, v in {
+        'id': id,
+        'name': name
+    }.items() if v is not None}
+
+    return await college_crud.read_by_dict(filters, session)

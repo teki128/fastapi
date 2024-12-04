@@ -24,21 +24,16 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType, PublicSche
         db.commit()
         db.refresh(db_obj)
         return db_obj
-
-    async def read_all(self, db: SessionDep) -> list[PublicSchemaType]: # TODO: 删除所有read_all方法
-        return db.exec(select(self.model)).all()
-
-    async def read(self, obj_id: int, db: SessionDep) -> PublicSchemaType:
-        db_obj = db.get(self.model, obj_id)
-        if not db_obj:
-            raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
-        return db_obj 
     
     async def read_by_dict(self, attr: dict, db: SessionDep) -> list[PublicSchemaType]:
         query = select(self.model)
         for key, value in attr.items():
             query = query.where(getattr(self.model, key) == value)
-        return db.exec(query).all() # XXX: 看看 db 有没有相关的 filter 方法
+
+        result = db.exec(query).all()
+        if not result: 
+            raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
+        return result # XXX: 看看 db 有没有相关的 filter 方法
 
     async def delete(self, obj_id: int, db: SessionDep) -> None:
         db_obj = db.get(self.model, obj_id)
@@ -87,6 +82,12 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, PublicSch
         db.refresh(db_obj)
         return db_obj
 
+    async def read(self, obj_id: int, db: SessionDep) -> PublicSchemaType:
+        db_obj = db.get(self.model, obj_id)
+        if not db_obj:
+            raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
+        return db_obj 
+    
     async def update(self, obj_id: int, obj_in: UpdateSchemaType, db: SessionDep) -> PublicSchemaType:
         db_obj = db.get(self.model, obj_id)
         if not db_obj:

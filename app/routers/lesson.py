@@ -18,10 +18,6 @@ async def create_lesson(data: LessonCreate, session: SessionDep, current_user: A
 async def delete_lesson(lesson_id: int, session: SessionDep, current_user: Annotated[UserPublic, get_current_admin]):
     await lesson_crud.delete(lesson_id, session)
 
-@router.get('/lesson/{lesson_id}', response_model=LessonPublic)
-async def read_lesson_by_id(lesson_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):
-    return await lesson_crud.read(lesson_id, session)
-
 @router.get('/lesson', response_model=list[LessonPublic])
 async def filter_lesson(
     session: SessionDep, 
@@ -38,10 +34,7 @@ async def filter_lesson(
         'exam_type': exam_type
     }.items() if v is not None}
     
-    result = await lesson_crud.read_by_dict(filters, session)
-    if not result: 
-        raise HTTPException(status_code=404, detail="lesson not found")
-    return result
+    return await lesson_crud.read_by_dict(filters, session)
 
 @router.patch('/lesson/{lesson_id}', response_model=LessonPublic)
 async def update_lesson(lesson_id: int, data: LessonUpdate, session: SessionDep, current_user: Annotated[UserPublic, get_current_admin]):

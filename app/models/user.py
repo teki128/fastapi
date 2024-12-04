@@ -1,8 +1,9 @@
+from sqlalchemy import BigInteger
 from sqlmodel import SQLModel, Field
 from typing import Optional
 
 class UserBase(SQLModel):
-    id: int = Field(primary_key=True) # FIXME: id int存不下学号，需改为BIGINT对应的类型
+    id: int = Field(primary_key=True) # XXX: 尝试修改为str
     name: str
     
 class UserPublic(UserBase):
@@ -16,6 +17,7 @@ class User(UserBase, table=True):
     tele: Optional[int] = Field(default=None)
     college_id: Optional[int] = Field(foreign_key='college.id', default=None)
     is_admin: bool = Field(default=False)
+
 
 
 class UserCreate(UserBase):

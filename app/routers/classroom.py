@@ -1,5 +1,5 @@
-from typing import Annotated
-from fastapi import Depends, APIRouter
+from typing import Annotated, Optional
+from fastapi import Depends, APIRouter, Query
 
 from app.models.classroom import *
 from app.models.user import UserPublic
@@ -9,10 +9,14 @@ from app.service.authenticate import get_current_user
 
 router = APIRouter(prefix='/api')
 
-@router.get('/classroom/{classroom_id}', response_model=ClassroomPublic)
-async def read_classroom(classroom_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):
-    return await classroom_crud.read(classroom_id, session)
-
 @router.get('/classroom', response_model=list[ClassroomPublic])
-async def read_all_classrooms(session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):
-    return await classroom_crud.read_all(session)
+async def filter_classroom(
+    session: SessionDep, 
+    current_user: Annotated[UserPublic, Depends(get_current_user)],
+    id: Annotated[Optional[int], Query()] = None
+):
+    filters = {k: v for k, v in {
+        'id': id,
+    }.items() if v is not None}
+
+    return await classroom_crud.read_by_dict(filters, session)

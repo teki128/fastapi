@@ -16,7 +16,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/token')
 
 
 async def get_user(user_id, session) -> User:
-    user = user_crud.read(user_id, session)
+    user = user_crud.read(user_id, session) # TODO: user.read更改为read_by_dict
     return user
 
 
