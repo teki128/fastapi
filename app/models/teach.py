@@ -19,4 +19,4 @@ class TeachUpdate(TeachBase):
     pass
 
 class TeachPublic(TeachBase):
-    pass
+    id: int

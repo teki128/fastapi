@@ -8,7 +8,7 @@ class College(CollegeBase, table=True):
     id: int = Field(primary_key=True)
 
 class CollegePublic(CollegeBase):
-    pass
+    id: int
 
 class CollegeCreate(CollegeBase):
     pass

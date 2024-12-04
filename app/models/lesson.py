@@ -13,21 +13,17 @@ class ExamEnum(str, Enum):
 
 class LessonBase(SQLModel):
     name: str = Field(index=True)
-
-class Lesson(LessonBase, table=True):
-    id: int = Field(primary_key=True)
     college_id: int = Field(foreign_key='college.id')
     credit: int
     study_time: int
     importance: ImportanceEnum = Field(default=ImportanceEnum.HIGH) 
     exam_type: ExamEnum = Field(default=ExamEnum.EXAM)
 
+class Lesson(LessonBase, table=True):
+    id: int = Field(primary_key=True)
+
 class LessonCreate(LessonBase):
-    college_id: int = Field(foreign_key='college.id')
-    credit: int
-    study_time: int
-    importance: ImportanceEnum = Field(default=ImportanceEnum.HIGH)
-    exam_type: ExamEnum = Field(default=ExamEnum.EXAM)
+    pass
 
 class LessonUpdate(LessonBase):
     name: Optional[str] = Field(index=True)
@@ -38,8 +34,4 @@ class LessonUpdate(LessonBase):
     exam_type: Optional[ExamEnum] = Field(default=ExamEnum.EXAM)
 
 class LessonPublic(LessonBase):
-    college_id: int = Field(foreign_key='college.id')
-    credit: int
-    study_time: int
-    importance: ImportanceEnum = Field(default=ImportanceEnum.HIGH)
-    exam_type: ExamEnum = Field(default=ExamEnum.EXAM)
+    id: int

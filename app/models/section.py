@@ -12,12 +12,11 @@ class SectionBase(SQLModel):
 class Section(SectionBase, table=True):
     id: int = Field(primary_key=True)
 
-
 class SectionCreate(SectionBase):
     pass
 
 class SectionPublic(SectionBase):
-    pass
+    id: int
 
 class SectionUpdate(SectionBase):
     sn: Optional[int]

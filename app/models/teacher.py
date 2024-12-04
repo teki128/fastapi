@@ -17,4 +17,5 @@ class TeacherUpdate(TeacherBase):
    pass
 
 class TeacherPublic(TeacherBase):
+   id: int
    college_id: int = Field(foreign_key='college.id')

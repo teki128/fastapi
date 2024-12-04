@@ -8,10 +8,10 @@ class FavourBase(SQLModel):
 class Favour(FavourBase, table=True):
     id: int = Field(primary_key=True)
 
-    __table_args__ = (UniqueConstraint('user_id', 'section_id', name='uix_user_section'),)
+    __table_args__ = (UniqueConstraint('user_id', 'section_id', name='uix_user_section_favour'),)
 
 class FavourPublic(FavourBase):
-    pass
+    id: int
 
 class FavourCreate(FavourBase):
     pass

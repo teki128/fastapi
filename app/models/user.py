@@ -5,9 +5,10 @@ from typing import Optional
 class UserBase(SQLModel):
     id: int = Field(primary_key=True) # XXX: 尝试修改为str
     name: str
+    college_id: int = Field(foreign_key='college.id')
     
 class UserPublic(UserBase):
-    college_id: int = Field(foreign_key='college.id')
+    tele: Optional[int]
     is_admin: bool = Field(default=False)
 
 class User(UserBase, table=True):
@@ -15,14 +16,10 @@ class User(UserBase, table=True):
     question: Optional[str] = Field(default=None)
     hashed_answer: Optional[str] = Field(default=None)
     tele: Optional[int] = Field(default=None)
-    college_id: Optional[int] = Field(foreign_key='college.id', default=None)
     is_admin: bool = Field(default=False)
-
-
 
 class UserCreate(UserBase):
     raw_password: str = Field(min_length=6)
-    college_id: Optional[int] = Field(foreign_key='college.id', default=None)
     is_admin: bool = Field(default=False)
     
     def to_user(self, hashed_password: str) -> User:
@@ -36,7 +33,6 @@ class UserCreate(UserBase):
             tele=None,
             college_id=self.college_id
         )
-
 
 class UserUpdate(UserBase):
     name: Optional[str] = Field(default=None)

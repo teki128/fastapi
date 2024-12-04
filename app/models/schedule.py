@@ -29,10 +29,8 @@ class ScheduleBase(SQLModel):
 class Schedule(ScheduleBase, table=True):
     id: int = Field(primary_key=True)
 
-
 class ScheduleCreate(ScheduleBase):
     pass
-
 
 class ScheduleUpdate(ScheduleBase):
     week_start: Optional[int] = Field(le=1, ge=18)
@@ -43,5 +41,5 @@ class ScheduleUpdate(ScheduleBase):
     period_end: Optional[int] = Field(le=1, ge=12)
 
 class SchedulePublic(ScheduleBase):
-    pass
+    id: int
     

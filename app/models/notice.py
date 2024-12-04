@@ -3,20 +3,17 @@ from typing import Optional
 #公告表 增删查改
 class NoticeBase(SQLModel):
     title: str = Field(index=True, nullable=False)
+    content: str = Field(default=None)
 
 class Notice(NoticeBase, table=True):
     id: int = Field(primary_key=True)
-    content: str
     author_id: int = Field(foreign_key='user.id')
     # author: UserBase = Relationship(back_populates='') # XXX: 是否添加？
 
 class NoticeCreate(NoticeBase):
-    content: str = Field(default=None)
     author_id: int = Field(foreign_key='user.id')
 
 class NoticePreCreate(NoticeBase):
-    content: str = Field(default=None)
-    
     def to_create(self, author_id: int) -> NoticeCreate:
         return NoticeCreate(
             title=self.title,
@@ -29,6 +26,6 @@ class NoticeUpdate(NoticeBase):
     content: Optional[str] = Field(default=None)
 
 class NoticePublic(NoticeBase):
-    content: str
+    id: int
     author_id: int = Field(foreign_key='user.id')
 
