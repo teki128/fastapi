@@ -9,7 +9,7 @@ from app.service.authenticate import get_current_user
 
 router = APIRouter(prefix='/api')
 
-@router.get('/teacher', response_model=list[TeacherPublic]) # TODO: 重构所有的get型api路径，切换为Query型api
+@router.get('/teacher', response_model=list[TeacherPublic])
 async def filter_teacher(
     session: SessionDep, 
     current_user: Annotated[UserPublic, Depends(get_current_user)], 

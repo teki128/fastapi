@@ -3,7 +3,6 @@ from app.db.session import SessionDep
 from fastapi import HTTPException
 from typing import Type, TypeVar, Generic
 from app.utils.authenciate import hash_password
-import warnings
 
 ModelType = TypeVar("ModelType", bound=SQLModel)
 CreateSchemaType = TypeVar("CreateSchemaType")
@@ -82,13 +81,6 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, PublicSch
         db.commit()
         db.refresh(db_obj)
         return db_obj
-
-    @warnings.deprecated
-    async def read(self, obj_id: int, db: SessionDep) -> ModelType:
-        db_obj = db.get(self.model, obj_id)
-        if not db_obj:
-            raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
-        return db_obj 
     
     async def update(self, obj_id: int, obj_in: UpdateSchemaType, db: SessionDep) -> PublicSchemaType:
         db_obj = db.get(self.model, obj_id)

@@ -16,7 +16,7 @@ oauth2_scheme = OAuth2PasswordBearer(tokenUrl='/api/token')
 
 
 async def get_user(user_id, session) -> User:
-    user = user_crud.read(user_id, session) # TODO: user.read更改为read_by_dict
+    user = (await user_crud.read_by_dict({'id': user_id}, session))[0] 
     return user
 
 
@@ -41,7 +41,7 @@ async def decode_token(token, session):
     except InvalidTokenError:
         return False
     
-    user = await user_crud.read(token_data.id, session)
+    user = (await user_crud.read_by_dict({'id': token_data.id}, session))[0]
     return user
 
 
@@ -63,7 +63,7 @@ async def get_current_admin(current_user: Annotated[UserPublic, Depends(get_curr
     return current_user
 
 async def authenticate_user(user_id: int, password: str, session: Session):
-    user = await user_crud.read(user_id, session)
+    user = (await user_crud.read_by_dict({'id': user_id}, session))[0]
     if not user:
         return False
     if not verify_password(password, user.hashed_password):

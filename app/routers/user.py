@@ -38,7 +38,7 @@ async def filter_user(
     return await user_crud.read_by_dict(filters, session)
 
 @router.get('/user/me', response_model=UserPublic)
-async def read_users_me(current_user: Annotated[UserPublic, Depends(get_current_user)]):
+async def read_myself(current_user: Annotated[UserPublic, Depends(get_current_user)]):
     return current_user
 
 @router.post('/token') # 登录
