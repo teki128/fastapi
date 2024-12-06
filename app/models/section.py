@@ -11,12 +11,14 @@ class SectionBase(SQLModel):
 
 class Section(SectionBase, table=True):
     id: int = Field(primary_key=True)
+    lesson: 'Lesson' = Relationship(back_populates='sections')
 
 class SectionCreate(SectionBase):
     pass
 
 class SectionPublic(SectionBase):
     id: int
+    lesson: 'Lesson' = Relationship(back_populates='sections')
 
 class SectionUpdate(SectionBase):
     sn: Optional[int] = None

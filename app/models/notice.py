@@ -8,7 +8,6 @@ class NoticeBase(SQLModel):
 class Notice(NoticeBase, table=True):
     id: int = Field(primary_key=True)
     author_id: int = Field(foreign_key='user.id')
-    # author: UserBase = Relationship(back_populates='') # XXX: 是否添加？
 
 class NoticeCreate(NoticeBase):
     author_id: int = Field(foreign_key='user.id')

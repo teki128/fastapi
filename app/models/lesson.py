@@ -21,6 +21,7 @@ class LessonBase(SQLModel):
 
 class Lesson(LessonBase, table=True):
     id: int = Field(primary_key=True)
+    sections: list['Section']  = Relationship(back_populates='lesson')
 
 class LessonCreate(LessonBase):
     pass
@@ -35,3 +36,4 @@ class LessonUpdate(LessonBase):
 
 class LessonPublic(LessonBase):
     id: int
+    sections: list['Section']  = Relationship(back_populates='lesson')

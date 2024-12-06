@@ -31,12 +31,15 @@ async def filter_course(
     session: SessionDep,
     current_user: Annotated[UserPublic, Depends(get_current_user)],
     id: Annotated[Optional[int], Query()] = None,
-    
+    user_id: Annotated[Optional[int], Query()] = None,
+    section_id: Annotated[Optional[int], Query()] = None,
 ):
     
     filters = {k: v for k, v in {
         'id': id,
+        'user_id': user_id,
+        'section_id': section_id,
         
-    }.items() if v is not None} # TODO: 待补充
+    }.items() if v is not None}
 
     return await course_crud.read_by_dict(filters, session)
