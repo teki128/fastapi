@@ -1,5 +1,6 @@
 from typing import Annotated, Optional
 from fastapi import Depends, Query, APIRouter
+from fastapi_pagination import Page, paginate
 
 from app.models.course import *
 from app.models.user import UserPublic
@@ -26,7 +27,7 @@ async def create_course_for_user(
 async def delete_course(course_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):
     await course_crud.delete(course_id) # TODO: 鉴权机制，个人只能删除个人的course
 
-@router.get('/course', response_model=list[CoursePublic])
+@router.get('/course', response_model=Page[CoursePublic])
 async def filter_course(
     session: SessionDep,
     current_user: Annotated[UserPublic, Depends(get_current_user)],
@@ -42,4 +43,5 @@ async def filter_course(
         
     }.items() if v is not None}
 
-    return await course_crud.read_by_dict(filters, session)
+    result = await course_crud.read_by_dict(filters, session)
+    return paginate(result)

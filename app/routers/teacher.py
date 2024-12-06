@@ -1,5 +1,6 @@
 from typing import Annotated, Optional
 from fastapi import Depends, APIRouter, Query
+from fastapi_pagination import Page, paginate
 
 from app.models.teacher import *
 from app.models.user import UserPublic
@@ -9,7 +10,7 @@ from app.service.authenticate import get_current_user
 
 router = APIRouter(prefix='/api')
 
-@router.get('/teacher', response_model=list[TeacherPublic])
+@router.get('/teacher', response_model=Page[TeacherPublic])
 async def filter_teacher(
     session: SessionDep, 
     current_user: Annotated[UserPublic, Depends(get_current_user)], 
@@ -23,4 +24,5 @@ async def filter_teacher(
         'college_id': college_id
     }.items() if v is not None}
 
-    return await teacher_crud.read_by_dict(filters, session)
+    result = await teacher_crud.read_by_dict(filters, session)
+    return paginate(result)

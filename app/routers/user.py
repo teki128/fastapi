@@ -1,6 +1,7 @@
 from typing import Annotated
 from fastapi import Depends, Query, APIRouter, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
+from fastapi_pagination import Page, paginate
 from datetime import timedelta
 
 from app.config.config import ACCESS_TOKEN_EXPIRE_DAYS
@@ -20,7 +21,7 @@ async def create_user(data: UserCreate, session: SessionDep, current_user: Annot
 async def delete_user(user_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):
     await user_crud.delete(user_id, session)
 
-@router.get('/user', response_model=list[UserPublic])
+@router.get('/user', response_model=Page[UserPublic])
 async def filter_user(
     session: SessionDep,
     current_user: Annotated[UserPublic, Depends(get_current_admin)],
@@ -35,7 +36,8 @@ async def filter_user(
         'college_id': college_id
     }.items() if v is not None}
 
-    return await user_crud.read_by_dict(filters, session)
+    result = await user_crud.read_by_dict(filters, session)
+    return paginate(result) # TODO: 需添加一个读取主键返回xxpublic对象的api端点
 
 @router.get('/user/me', response_model=UserPublic)
 async def read_myself(current_user: Annotated[UserPublic, Depends(get_current_user)]):

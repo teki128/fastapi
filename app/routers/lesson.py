@@ -1,5 +1,6 @@
 from typing import Annotated, Optional
-from fastapi import Depends, APIRouter, HTTPException, Query
+from fastapi import Depends, APIRouter, Query
+from fastapi_pagination import Page, paginate
 
 from app.models.lesson import *
 from app.models.user import UserPublic
@@ -17,7 +18,7 @@ async def create_lesson(data: LessonCreate, session: SessionDep, current_user: A
 async def delete_lesson(lesson_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):
     await lesson_crud.delete(lesson_id, session)
 
-@router.get('/lesson', response_model=list[LessonPublic])
+@router.get('/lesson', response_model=Page[LessonPublic])
 async def filter_lesson(
     session: SessionDep, 
     current_user: Annotated[UserPublic, Depends(get_current_user)],
@@ -33,7 +34,8 @@ async def filter_lesson(
         'exam_type': exam_type
     }.items() if v is not None}
     
-    return await lesson_crud.read_by_dict(filters, session)
+    result = lesson_crud.read_by_dict(filters, session)    
+    return paginate(result)
 
 @router.patch('/lesson/{lesson_id}', response_model=LessonPublic)
 async def update_lesson(lesson_id: int, data: LessonUpdate, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):

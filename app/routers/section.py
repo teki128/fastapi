@@ -1,5 +1,6 @@
 from typing import Annotated
 from fastapi import Depends, Query, APIRouter
+from fastapi_pagination import Page, paginate
 
 from app.models.section import *
 from app.models.user import UserPublic
@@ -17,7 +18,7 @@ async def create_section(data: SectionCreate, session: SessionDep, current_user:
 async def delete_section(section_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):
     await section_crud.delete(section_id)
 
-@router.get('/section', response_model=list[SectionPublic])
+@router.get('/section', response_model=Page[SectionPublic])
 async def filter_section(
     session: SessionDep,
     current_user: Annotated[UserPublic, Depends(get_current_user)],
@@ -31,8 +32,8 @@ async def filter_section(
         'sn': sn,
         'lesson_id': lesson_id
     }.items() if v is not None}
-
-    return await section_crud.read_by_dict(filters, session)
+    result = await section_crud.read_by_dict(filters, session)    
+    return paginate(result)
 
 @router.patch('/section/{section_id}', response_model=SectionPublic)
 async def update_section(section_id: int, data: SectionUpdate, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):

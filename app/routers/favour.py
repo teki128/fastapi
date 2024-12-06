@@ -1,5 +1,6 @@
 from typing import Annotated, Optional
 from fastapi import Depends, Query, APIRouter
+from fastapi_pagination import Page, paginate
 
 from app.models.favour import *
 from app.models.user import UserPublic
@@ -18,7 +19,7 @@ async def create_favour(raw_data: FavourPreCreate, session: SessionDep, current_
 async def delete_favour(favour_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):
     await favour_crud.delete(favour_id) # TODO: 鉴权机制，个人只能删除个人的favour
 
-@router.get('/favour', response_model=list[FavourPublic])
+@router.get('/favour', response_model=Page[FavourPublic])
 async def filter_favour(
     session: SessionDep,
     current_user: Annotated[UserPublic, Depends(get_current_user)],
@@ -33,4 +34,5 @@ async def filter_favour(
         'section_id': section_id,
     }.items() if v is not None}
 
-    return await favour_crud.read_by_dict(filters, session)
+    result = favour_crud.read_by_dict(filters, session)
+    return paginate(result)

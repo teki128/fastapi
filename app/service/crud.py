@@ -33,7 +33,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType, PublicSche
         result = db.exec(query).all()
         if not result: 
             raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
-        return result # TODO: 分页待完成
+        return result
 
     async def delete(self, obj_id: int, db: SessionDep) -> None:
         db_obj = db.get(self.model, obj_id)
@@ -81,7 +81,8 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, PublicSch
         db.commit()
         db.refresh(db_obj)
         return db_obj
-    
+
+
     async def update(self, obj_id: int, obj_in: UpdateSchemaType, db: SessionDep) -> PublicSchemaType:
         db_obj = db.get(self.model, obj_id)
         if not db_obj:
