@@ -19,8 +19,9 @@ class SectionPublic(SectionBase):
     id: int
 
 class SectionUpdate(SectionBase):
-    sn: Optional[int]
-    capacity: Optional[int] = Field(le=0, ge=200)
-    info: Optional[str]
-    classroom_id: Optional[int] = Field(foreign_key='classroom.id')
+    sn: Optional[int] = None
+    lesson_id: int = Field(foreign_key='lesson.id', default=None)
+    capacity: Optional[int] = Field(le=0, ge=200, default=None)
+    info: Optional[str] = None
+    classroom_id: Optional[int] = Field(foreign_key='classroom.id', default=None)
 

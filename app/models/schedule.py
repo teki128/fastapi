@@ -33,12 +33,13 @@ class ScheduleCreate(ScheduleBase):
     pass
 
 class ScheduleUpdate(ScheduleBase):
-    week_start: Optional[int] = Field(le=1, ge=18)
-    week_end: Optional[int] = Field(le=1, ge=18)
-    weekday: Optional[Weekday] = Field()
-    odd_or_even: Optional[OddEvenEnum] = Field(OddEvenEnum.NORMAL)
-    period_start: Optional[int] = Field(le=1, ge=12)
-    period_end: Optional[int] = Field(le=1, ge=12)
+    section_id: int = Field(foreign_key='section.id', default=None)
+    week_start: Optional[int] = Field(le=1, ge=18, default=None)
+    week_end: Optional[int] = Field(le=1, ge=18, default=None)
+    weekday: Optional[Weekday] = None
+    odd_or_even: Optional[OddEvenEnum] = None
+    period_start: Optional[int] = Field(le=1, ge=12, default=None)
+    period_end: Optional[int] = Field(le=1, ge=12, default=None)
 
 class SchedulePublic(ScheduleBase):
     id: int

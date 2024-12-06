@@ -1,5 +1,5 @@
 from typing import Annotated
-from fastapi import Depends, APIRouter, HTTPException
+from fastapi import Depends, Query, APIRouter, HTTPException
 from fastapi.security import OAuth2PasswordRequestForm
 from datetime import timedelta
 
@@ -24,9 +24,9 @@ async def delete_user(user_id: int, session: SessionDep, current_user: Annotated
 async def filter_user(
     session: SessionDep,
     current_user: Annotated[UserPublic, Depends(get_current_admin)],
-    id: int,
-    name: str,
-    college_id: int
+    id: Annotated[Optional[int], Query()] = None,
+    name: Annotated[Optional[str], Query()] = None,
+    college_id: Annotated[Optional[int], Query()] = None
 ):
 
     filters = {k: v for k, v in {

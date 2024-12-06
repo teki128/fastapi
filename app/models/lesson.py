@@ -26,12 +26,12 @@ class LessonCreate(LessonBase):
     pass
 
 class LessonUpdate(LessonBase):
-    name: Optional[str] = Field(index=True)
-    college_id: Optional[int] = Field(foreign_key='college.id')
-    credit: Optional[int]
-    study_time: Optional[int]
-    importance: Optional[ImportanceEnum] = Field(default=ImportanceEnum.HIGH)
-    exam_type: Optional[ExamEnum] = Field(default=ExamEnum.EXAM)
+    name: Optional[str] = None
+    college_id: Optional[int] = Field(foreign_key='college.id', default=None)
+    credit: Optional[int] = None
+    study_time: Optional[int] = None
+    importance: Optional[ImportanceEnum] = None
+    exam_type: Optional[ExamEnum] = None
 
 class LessonPublic(LessonBase):
     id: int

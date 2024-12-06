@@ -13,13 +13,13 @@ from app.models.teach import Teach, TeachCreate, TeachUpdate, TeachPublic
 
 # 以下
 user_crud = CRUDUser(User, UserCreate, UserUpdate, UserPublic)
-lesson_crud = CRUDNoUpdate(Lesson, LessonCreate, LessonUpdate, LessonPublic)
+lesson_crud = CRUDBase(Lesson, LessonCreate, LessonUpdate, LessonPublic)
 college_crud = CRUDOnlyRead(College, CollegeCreate, CollegeUpdate, CollegePublic)
 classroom_crud = CRUDOnlyRead(Classroom, ClassroomCreate, ClassroomUpdate, ClassroomPublic)
 course_crud = CRUDNoUpdate(Course, CourseCreate, CourseUpdate, CoursePublic)
 favour_crud = CRUDNoUpdate(Favour, FavourCreate, FavourUpdate, FavourPublic)
 notice_crud = CRUDBase(Notice, NoticeCreate, NoticeUpdate, NoticePublic)
-schedule_crud = CRUDNoUpdate(Schedule, ScheduleCreate, ScheduleUpdate, SchedulePublic)
+schedule_crud = CRUDBase(Schedule, ScheduleCreate, ScheduleUpdate, SchedulePublic)
 section_crud = CRUDBase(Section, SectionCreate, SectionUpdate, SectionPublic)
 teacher_crud = CRUDOnlyRead(Teacher, TeacherCreate, TeacherUpdate, TeacherPublic)
 teach_crud = CRUDNoUpdate(Teach, TeachCreate, TeachUpdate, TeachPublic)

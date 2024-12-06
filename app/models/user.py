@@ -35,11 +35,11 @@ class UserCreate(UserBase):
         )
 
 class UserUpdate(UserBase):
-    name: Optional[str] = Field(default=None)
+    name: Optional[str] = None
     raw_password: Optional[str] = Field(min_length=6, default=None)
-    question: Optional[str] = Field(default=None)
-    raw_answer: Optional[str] = Field(default=None)
-    tele: Optional[int] = Field(default=None)
+    question: Optional[str] = None
+    raw_answer: Optional[str] = None
+    tele: Optional[int] = None
     college_id: Optional[int] = Field(foreign_key='college.id', default=None)
 
 

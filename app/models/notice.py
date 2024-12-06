@@ -22,8 +22,8 @@ class NoticePreCreate(NoticeBase):
         )
 
 class NoticeUpdate(NoticeBase):
-    title: Optional[str] = Field(default=None)
-    content: Optional[str] = Field(default=None)
+    title: Optional[str] = None
+    content: Optional[str] = None
 
 class NoticePublic(NoticeBase):
     id: int

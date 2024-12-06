@@ -23,7 +23,7 @@ async def filter_notice(
     session: SessionDep, 
     current_user: Annotated[UserPublic, Depends(get_current_user)],
     id: Annotated[Optional[int], Query()] = None, 
-    title: Annotated[Optional[int], Query()] = None
+    title: Annotated[Optional[str], Query()] = None
 ):
     filters = {k: v for k, v in {
         'id': id,
