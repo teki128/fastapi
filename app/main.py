@@ -9,6 +9,9 @@ from app.routers.teacher import router as teacher_router
 from app.routers.teach import router as teach_router
 from app.routers.lesson import router as lesson_router
 from app.routers.section import router as section_router
+from app.routers.schedule import router as schedule_router
+from app.routers.course import router as course_router
+from app.routers.favour import router as favour_router
 
 app = FastAPI(lifespan=lifespan)
 
@@ -20,3 +23,6 @@ app.include_router(teacher_router)
 app.include_router(teach_router)
 app.include_router(lesson_router)
 app.include_router(section_router)
+app.include_router(schedule_router)
+app.include_router(course_router)
+app.include_router(favour_router)

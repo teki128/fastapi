@@ -35,5 +35,5 @@ async def filter_section(
     return await section_crud.read_by_dict(filters, session)
 
 @router.patch('/section/{section_id}', response_model=SectionPublic)
-async def update_notice(section_id: int, data: SectionUpdate, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):
+async def update_section(section_id: int, data: SectionUpdate, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):
     return await section_crud.update(section_id, data, session)

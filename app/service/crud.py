@@ -3,6 +3,7 @@ from app.db.session import SessionDep
 from fastapi import HTTPException
 from typing import Type, TypeVar, Generic
 from app.utils.authenciate import hash_password
+import warnings
 
 ModelType = TypeVar("ModelType", bound=SQLModel)
 CreateSchemaType = TypeVar("CreateSchemaType")
@@ -25,7 +26,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType, PublicSche
         db.refresh(db_obj)
         return db_obj
     
-    async def read_by_dict(self, attr: dict, db: SessionDep) -> list[PublicSchemaType]:
+    async def read_by_dict(self, attr: dict, db: SessionDep) -> list[ModelType]:
         query = select(self.model)
         for key, value in attr.items():
             query = query.where(getattr(self.model, key) == value)
@@ -33,7 +34,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType, PublicSche
         result = db.exec(query).all()
         if not result: 
             raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
-        return result # XXX: 看看 db 有没有相关的 filter 方法
+        return result
 
     async def delete(self, obj_id: int, db: SessionDep) -> None:
         db_obj = db.get(self.model, obj_id)
@@ -82,7 +83,8 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, PublicSch
         db.refresh(db_obj)
         return db_obj
 
-    async def read(self, obj_id: int, db: SessionDep) -> PublicSchemaType:
+    @warnings.deprecated
+    async def read(self, obj_id: int, db: SessionDep) -> ModelType:
         db_obj = db.get(self.model, obj_id)
         if not db_obj:
             raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
