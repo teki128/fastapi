@@ -12,8 +12,7 @@ router = APIRouter(prefix='/api')
 @router.post('/notice', response_model=NoticePublic)
 async def create_notice(raw_data: NoticePreCreate, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):
     data = raw_data.to_create(current_user.id)
-    await notice_crud.create(data, session)
-    return data
+    return await notice_crud.create(data, session)
 
 @router.delete('/notice/{notice_id}')
 async def delete_notice(notice_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):

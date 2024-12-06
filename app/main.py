@@ -8,6 +8,7 @@ from app.routers.college import router as college_router
 from app.routers.teacher import router as teacher_router
 from app.routers.teach import router as teach_router
 from app.routers.lesson import router as lesson_router
+from app.routers.section import router as section_router
 
 app = FastAPI(lifespan=lifespan)
 
@@ -18,3 +19,4 @@ app.include_router(college_router)
 app.include_router(teacher_router)
 app.include_router(teach_router)
 app.include_router(lesson_router)
+app.include_router(section_router)

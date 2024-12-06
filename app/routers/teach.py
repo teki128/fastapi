@@ -22,5 +22,4 @@ async def filter_teach(
         'section_id': section_id
     }.items() if v is not None}
 
-    teach = await teach_crud.read_by_dict(filters, session)
-    return teach
+    return await teach_crud.read_by_dict(filters, session)
