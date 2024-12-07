@@ -43,4 +43,20 @@ class ScheduleUpdate(ScheduleBase):
 
 class SchedulePublic(ScheduleBase):
     id: int
-    
+
+
+async def isScheduleConflict(schedule1: Schedule, schedule2: Schedule):
+
+    if (schedule1.week_start <= schedule2.week_end
+            and schedule1.week_end >= schedule2.week_start):
+        if (schedule1.odd_or_even != OddEvenEnum.NORMAL
+                and schedule2.odd_or_even != OddEvenEnum.NORMAL):
+            if abs(schedule1.week_start - schedule2.week_start) % 2 == 1:
+                return False
+
+        if (schedule1.weekday == schedule2.weekday
+                and schedule1.period_start <= schedule1.period_end
+                and schedule1.period_end >= schedule2.period_start):
+            return True
+
+    return False

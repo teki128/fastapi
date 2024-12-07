@@ -4,6 +4,8 @@ from app.db.session import SessionDep
 from fastapi import HTTPException, status
 from typing import Type, TypeVar, Generic
 from app.utils.authenciate import hash_password
+from app.models.schedule import Schedule, isScheduleConflict
+from app.models.section import Section
 
 ModelType = TypeVar("ModelType", bound=SQLModel)
 CreateSchemaType = TypeVar("CreateSchemaType")
@@ -115,3 +117,57 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, PublicSch
         db.refresh(db_obj)
         return db_obj
 
+class CRUDCourse(CRUDNoUpdate[ModelType, CreateSchemaType, UpdateSchemaType, PublicSchemaType]):
+
+    async def isCourseConflict(self, db_obj: ModelType, db: SessionDep) -> bool:
+
+        db_schedule_statement = select(Schedule).where(db_obj.section_id == Schedule.section_id)
+        db_schedule_results = db.execute(db_schedule_statement)
+        db_schedules = db_schedule_results.scalars().all()
+
+        course_statement = select(self.model).where(self.model.user_id == db_obj.user_id)
+        course_results = db.execute(course_statement)
+        courses = course_results.scalars().all()
+
+        section_ids = {course.section_id for course in courses}
+
+        schedule_statement = select(Schedule).where(Schedule.section_id.in_(section_ids))
+        schedule_results = db.execute(schedule_statement)
+        schedules = schedule_results.scalars().all()
+        print("在这里傻逼")
+        print(db_schedules)
+        print(schedules)
+        for db_schedule in db_schedules:
+            for schedule in schedules:
+                if await isScheduleConflict(db_schedule, schedule):
+                    return True
+        return False
+
+    async def create(self, obj_in: CreateSchemaType, db: SessionDep) -> PublicSchemaType:
+        validated_obj = self.create_model.model_validate(obj_in)
+        db_obj = self.model(**validated_obj.dict())
+        if await self.isCourseConflict(db_obj, db):
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Conflict Course."
+            )
+
+        db.add(db_obj)
+
+        try:
+            db.commit()
+            db.refresh(db_obj)
+
+        except IntegrityError as e:
+            if 'Duplicate entry' in str(e.orig):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Duplicate entry."
+                )
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="An unexpected error occurred while saving the data."
+                )
+
+        return db_obj
