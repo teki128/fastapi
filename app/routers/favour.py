@@ -13,7 +13,7 @@ router = APIRouter(prefix='/api')
 @router.post('/favour', response_model=FavourPublic)
 async def create_favour(raw_data: FavourPreCreate, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):
     data = raw_data.to_create(current_user.id)
-    return await favour_crud.create(data, session) # TODO: 重复添加在底层catch error，detail重复选择
+    return await favour_crud.create(data, session)
 
 @router.delete('/favour/{favour_id}')
 async def delete_favour(favour_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):

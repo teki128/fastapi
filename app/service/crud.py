@@ -1,6 +1,7 @@
+from sqlalchemy.exc import IntegrityError
 from sqlmodel import SQLModel, select
 from app.db.session import SessionDep
-from fastapi import HTTPException
+from fastapi import HTTPException, status
 from typing import Type, TypeVar, Generic
 from app.utils.authenciate import hash_password
 
@@ -21,8 +22,21 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType, PublicSche
         validated_obj = self.create_model.model_validate(obj_in)
         db_obj = self.model(**validated_obj.dict())
         db.add(db_obj)
-        db.commit()
-        db.refresh(db_obj)
+        try:
+            db.commit()
+            db.refresh(db_obj)
+        
+        except IntegrityError as e:
+            if 'Duplicate entry' in str(e.orig):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Duplicate entry."
+                )
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="An unexpected error occurred while saving the data."
+                )
         return db_obj
     
     async def read_by_dict(self, attr: dict, db: SessionDep) -> list[ModelType]:
