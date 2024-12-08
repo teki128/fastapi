@@ -134,9 +134,7 @@ class CRUDCourse(CRUDNoUpdate[ModelType, CreateSchemaType, UpdateSchemaType, Pub
         schedule_statement = select(Schedule).where(Schedule.section_id.in_(section_ids))
         schedule_results = db.execute(schedule_statement)
         schedules = schedule_results.scalars().all()
-        print("在这里傻逼")
-        print(db_schedules)
-        print(schedules)
+
         for db_schedule in db_schedules:
             for schedule in schedules:
                 if await isScheduleConflict(db_schedule, schedule):
