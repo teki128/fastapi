@@ -7,7 +7,6 @@ from app.utils.authenciate import hash_password
 from app.models.schedule import Schedule, is_schedule_conflict
 from app.models.section import Section
 from app.models.course import Course
-from app.models.lesson import Lesson
 
 ModelType = TypeVar("ModelType", bound=SQLModel)
 CreateSchemaType = TypeVar("CreateSchemaType")
@@ -42,7 +41,10 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType, PublicSche
                     detail="An unexpected error occurred while saving the data."
                 )
         return db_obj
-    
+
+    async def read_by_id(self, obj_id, db: SessionDep) -> ModelType:
+        return db.get(self.model, obj_id)
+
     async def read_by_dict(self, attr: dict, db: SessionDep) -> list[ModelType]:
         query = select(self.model)
         for key, value in attr.items():
@@ -100,8 +102,8 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, PublicSch
         db.refresh(db_obj)
         return db_obj
 
-
     async def update(self, obj_id: int, obj_in: UpdateSchemaType, db: SessionDep) -> PublicSchemaType:
+
         db_obj = db.get(self.model, obj_id)
         if not db_obj:
             raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
@@ -114,7 +116,17 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, PublicSch
                 db_obj.hashed_answer = hash_password(value)
             else:
                 setattr(db_obj, key, value)
+        db.commit()
+        db.refresh(db_obj)
+        return db_obj
 
+    async def update_password(self, obj_id: int, obj_in: UpdateSchemaType, db: SessionDep) -> PublicSchemaType:
+
+        db_obj = db.get(self.model, obj_id)
+        if not db_obj:
+            raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
+
+        db_obj.hashed_password = hash_password(obj_in.raw_password)
         db.commit()
         db.refresh(db_obj)
         return db_obj
@@ -133,7 +145,7 @@ class CRUDCourse(CRUDNoUpdate[ModelType, CreateSchemaType, UpdateSchemaType, Pub
 
         section_ids = {course.section_id for course in courses}
 
-        #不能选同一个课程下不同课序的课
+        # 不能选同一个课程下不同课序的课
         for section_id in section_ids:
             if db.get(Section, db_obj.section_id).lesson_id == db.get(Section, section_id).lesson_id:
                 return True
@@ -142,7 +154,7 @@ class CRUDCourse(CRUDNoUpdate[ModelType, CreateSchemaType, UpdateSchemaType, Pub
         schedule_results = db.execute(schedule_statement)
         schedules = schedule_results.scalars().all()
 
-        #不能选时间表冲突的课
+        # 不能选时间表冲突的课
         for db_schedule in db_schedules:
             for schedule in schedules:
                 if await is_schedule_conflict(db_schedule, schedule):
