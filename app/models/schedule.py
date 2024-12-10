@@ -45,7 +45,7 @@ class SchedulePublic(ScheduleBase):
     id: int
 
 
-async def isScheduleConflict(schedule1: Schedule, schedule2: Schedule):
+async def is_schedule_conflict(schedule1: Schedule, schedule2: Schedule):
 
     if (schedule1.week_start <= schedule2.week_end
             and schedule1.week_end >= schedule2.week_start):
