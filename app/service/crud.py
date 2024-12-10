@@ -4,8 +4,10 @@ from app.db.session import SessionDep
 from fastapi import HTTPException, status
 from typing import Type, TypeVar, Generic
 from app.utils.authenciate import hash_password
-from app.models.schedule import Schedule, isScheduleConflict
+from app.models.schedule import Schedule, is_schedule_conflict
 from app.models.section import Section
+from app.models.course import Course
+from app.models.lesson import Lesson
 
 ModelType = TypeVar("ModelType", bound=SQLModel)
 CreateSchemaType = TypeVar("CreateSchemaType")
@@ -119,7 +121,7 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, PublicSch
 
 class CRUDCourse(CRUDNoUpdate[ModelType, CreateSchemaType, UpdateSchemaType, PublicSchemaType]):
 
-    async def isCourseConflict(self, db_obj: ModelType, db: SessionDep) -> bool:
+    async def is_course_conflict(self, db_obj: ModelType, db: SessionDep) -> bool:
 
         db_schedule_statement = select(Schedule).where(db_obj.section_id == Schedule.section_id)
         db_schedule_results = db.execute(db_schedule_statement)
@@ -131,25 +133,50 @@ class CRUDCourse(CRUDNoUpdate[ModelType, CreateSchemaType, UpdateSchemaType, Pub
 
         section_ids = {course.section_id for course in courses}
 
+        #不能选同一个课程下不同课序的课
+        for section_id in section_ids:
+            if db.get(Section, db_obj.section_id).lesson_id == db.get(Section, section_id).lesson_id:
+                return True
+
         schedule_statement = select(Schedule).where(Schedule.section_id.in_(section_ids))
         schedule_results = db.execute(schedule_statement)
         schedules = schedule_results.scalars().all()
 
         for db_schedule in db_schedules:
             for schedule in schedules:
-                if await isScheduleConflict(db_schedule, schedule):
+                if await is_schedule_conflict(db_schedule, schedule):
                     return True
         return False
+
+    async def is_section_full(self, db_obj: ModelType, db: SessionDep) ->bool:
+        db_section = db.get(Section, db_obj.section_id)
+
+        db_course_statement = select(Course).where(db_obj.section_id == Course.section_id)
+        db_course_results = db.execute(db_course_statement)
+        db_courses = db_course_results.scalars().all()
+        capacity = db_section.capacity
+
+        num = len(db_courses)
+        if num < capacity:
+            return False
+        else:
+            return True
 
     async def create(self, obj_in: CreateSchemaType, db: SessionDep) -> PublicSchemaType:
         validated_obj = self.create_model.model_validate(obj_in)
         db_obj = self.model(**validated_obj.dict())
-        if await self.isCourseConflict(db_obj, db):
+
+        if await self.is_section_full(db_obj, db):
+            raise HTTPException(
+                status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                detail="Course is full."
+            )
+
+        if await self.is_course_conflict(db_obj, db):
             raise HTTPException(
                 status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
                 detail="Conflict Course."
             )
-
         db.add(db_obj)
 
         try:

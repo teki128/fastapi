@@ -25,7 +25,7 @@ async def create_course_for_user(
 
 @router.delete('/course/{course_id}')
 async def delete_course(course_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):
-    await course_crud.delete(course_id) # TODO: 鉴权机制，个人只能删除个人的course
+    await course_crud.delete(course_id, session) # TODO: 鉴权机制，个人只能删除个人的course
 
 @router.get('/course', response_model=Page[CoursePublic])
 async def filter_course(
