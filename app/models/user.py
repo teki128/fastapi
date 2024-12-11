@@ -35,6 +35,7 @@ class UserCreate(UserBase):
         )
 
 class UserUpdate(UserBase):
+    id: Optional[int] = None
     name: Optional[str] = None
     raw_password: Optional[str] = Field(min_length=6, default=None)
     question: Optional[str] = None
@@ -42,5 +43,8 @@ class UserUpdate(UserBase):
     tele: Optional[int] = None
     college_id: Optional[int] = Field(foreign_key='college.id', default=None)
 
-
+class ForgetPwd(SQLModel):
+    user_id: int
+    raw_answer: str
+    raw_password: str
 
