@@ -56,7 +56,6 @@ async def get_current_user(token: Annotated[str, Depends(oauth2_scheme)], sessio
         )
     return user
 
-
 async def get_current_admin(current_user: Annotated[UserPublic, Depends(get_current_user)]):
     if not current_user.is_admin:
         raise HTTPException(status_code=403, detail="You are not an admin.")

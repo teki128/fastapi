@@ -7,6 +7,7 @@ from app.models.user import UserPublic
 from app.db.session import SessionDep
 from app.service.model_crud import favour_crud, user_crud
 from app.service.authenticate import get_current_user
+from app.utils.authenciate import check_host_or_admin
 
 router = APIRouter(prefix='/api')
 
@@ -17,7 +18,9 @@ async def create_favour(raw_data: FavourPreCreate, session: SessionDep, current_
 
 @router.delete('/favour/{favour_id}')
 async def delete_favour(favour_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):
-    await favour_crud.delete(favour_id) # TODO: 鉴权机制，个人只能删除个人的favour
+    favour = await favour_crud.read_by_id(favour_id, session)
+    if check_host_or_admin(favour.user_id, current_user):
+        await favour_crud.delete(favour_id) 
 
 @router.get('/favour', response_model=Page[FavourPublic])
 async def filter_favour(

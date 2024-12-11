@@ -1,4 +1,5 @@
 from passlib.context import CryptContext
+from fastapi import HTTPException
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto") # hashlib的上下文
 
@@ -7,3 +8,8 @@ def hash_password(password: str):
 
 def verify_password(raw_password, hashed_password):
     return pwd_context.verify(raw_password, hashed_password)
+
+def check_host_or_admin(user_id: int, current_user):
+    if not current_user.is_admin and current_user.id != user_id:
+        raise HTTPException(status_code=403, detail="You are not an admin or the host.")
+    return current_user

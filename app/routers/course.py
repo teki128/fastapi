@@ -7,13 +7,14 @@ from app.models.user import UserPublic
 from app.db.session import SessionDep
 from app.service.model_crud import course_crud, user_crud
 from app.service.authenticate import get_current_admin, get_current_user
+from app.utils.authenciate import check_host_or_admin
 
 router = APIRouter(prefix='/api')
 
 @router.post('/course', response_model=CoursePublic)
 async def create_course_for_myself(raw_data: CoursePreCreate, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):
     data = raw_data.to_create(current_user.id)
-    return await course_crud.create(data, session) # TODO: 选课注意时间冲突
+    return await course_crud.create(data, session) # TODO: 选课注意时间冲突，目前待测试
 
 @router.post('/course/admin', response_model=CoursePublic)
 async def create_course_for_user(
@@ -25,7 +26,9 @@ async def create_course_for_user(
 
 @router.delete('/course/{course_id}')
 async def delete_course(course_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):
-    await course_crud.delete(course_id, session) # TODO: 鉴权机制，个人只能删除个人的course
+    course = await course_crud.read_by_id(course_id, session)
+    if check_host_or_admin(course.user_id, current_user):
+        await course_crud.delete(course_id, session) 
 
 @router.get('/course', response_model=Page[CoursePublic])
 async def filter_course(
