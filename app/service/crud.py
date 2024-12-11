@@ -103,7 +103,6 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, PublicSch
         return db_obj
 
     async def update(self, obj_id: int, obj_in: UpdateSchemaType, db: SessionDep) -> PublicSchemaType:
-
         db_obj = db.get(self.model, obj_id)
         if not db_obj:
             raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
@@ -116,17 +115,6 @@ class CRUDUser(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, PublicSch
                 db_obj.hashed_answer = hash_password(value)
             else:
                 setattr(db_obj, key, value)
-        db.commit()
-        db.refresh(db_obj)
-        return db_obj
-
-    async def update_password(self, obj_id: int, obj_in: UpdateSchemaType, db: SessionDep) -> PublicSchemaType:
-
-        db_obj = db.get(self.model, obj_id)
-        if not db_obj:
-            raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
-
-        db_obj.hashed_password = hash_password(obj_in.raw_password)
         db.commit()
         db.refresh(db_obj)
         return db_obj

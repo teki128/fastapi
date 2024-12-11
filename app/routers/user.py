@@ -8,7 +8,7 @@ from app.utils.authenciate import verify_password
 from app.config.config import ACCESS_TOKEN_EXPIRE_DAYS
 from app.service.authenticate import authenticate_user, create_access_token
 from app.service.authenticate import get_current_user, get_current_admin
-from app.utils.authenciate import check_host_or_admin
+from app.utils.authenciate import check_host_or_admin, check_host_or_admin_only_admin_modify_id
 from app.service.model_crud import user_crud
 from app.db.session import *
 
@@ -57,7 +57,7 @@ async def forget_pwd(data: ForgetPwd, session: SessionDep):
     
 @router.patch('/user/{user_id}', response_model=UserPublic)
 async def update_user(user_id: int, data: UserUpdate, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):
-    if check_host_or_admin(user_id, current_user):
+    if check_host_or_admin_only_admin_modify_id(data, user_id, current_user):
         return await user_crud.update(user_id, data, session)
 
 @router.post('/token') # 登录
