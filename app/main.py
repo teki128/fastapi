@@ -1,5 +1,6 @@
 from fastapi import FastAPI
 from fastapi_pagination import add_pagination
+from fastapi.middleware.cors import CORSMiddleware
 
 from app.core.lifespan import lifespan
 from app.routers.user import router as user_router
@@ -15,7 +16,21 @@ from app.routers.course import router as course_router
 from app.routers.favour import router as favour_router
 
 app = FastAPI(lifespan=lifespan)
+
 add_pagination(app)
+
+origins = [
+    "http://localhost:*",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+
 
 app.include_router(user_router)
 app.include_router(notice_router)
