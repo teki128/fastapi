@@ -16,6 +16,18 @@ class Section(SectionBase, table=True):
 class SectionCreate(SectionBase):
     pass
 
+class SectionPreCreate(SectionBase):
+    teacher_id: list[int] = Field(foreign_key='teacher.id')
+
+    def to_create(self) -> SectionCreate:
+        return SectionCreate(
+            sn=self.sn,
+            lesson_id=self.lesson_id,
+            capacity=self.capacity,
+            info=self.info,
+            classroom_id=self.classroom_id,
+        )
+
 class SectionPublic(SectionBase):
     id: int
     lesson: 'Lesson' = Relationship(back_populates='sections')

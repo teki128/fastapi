@@ -16,7 +16,7 @@ async def create_schedule(data: ScheduleCreate, session: SessionDep, current_use
 
 @router.delete('/schedule/{schedule_id}')
 async def delete_schedule(schedule_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):
-    await schedule_crud.delete(schedule_id)
+    await schedule_crud.delete(schedule_id, session)
 
 @router.get('/schedule', response_model=Page[SchedulePublic])
 async def filter_schedule(
@@ -31,7 +31,7 @@ async def filter_schedule(
         'section_id': section_id
     }.items() if v is not None}
 
-    result = schedule_crud.read_by_dict(filters, session)    
+    result = await schedule_crud.read_by_dict(filters, session)    
     return paginate(result)
 
 @router.patch('/schedule/{schedule_id}', response_model=SchedulePublic)

@@ -11,12 +11,12 @@ from app.service.authenticate import get_current_admin, get_current_user
 router = APIRouter(prefix='/api')
 
 @router.post('/section', response_model=SectionPublic)
-async def create_section(data: SectionCreate, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):
-    return await section_crud.create(data, session)
+async def create_section(data: SectionPreCreate, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):
+    return await section_crud.create(data.to_create(), data.teacher_id, session)
 
 @router.delete('/section/{section_id}')
 async def delete_section(section_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):
-    await section_crud.delete(section_id)
+    await section_crud.delete(section_id, session)
 
 @router.get('/section', response_model=Page[SectionPublic])
 async def filter_section(

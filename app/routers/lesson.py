@@ -34,7 +34,7 @@ async def filter_lesson(
         'exam_type': exam_type
     }.items() if v is not None}
     
-    result = lesson_crud.read_by_dict(filters, session)    
+    result = await lesson_crud.read_by_dict(filters, session)    
     return paginate(result)
 
 @router.patch('/lesson/{lesson_id}', response_model=LessonPublic)

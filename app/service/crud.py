@@ -3,6 +3,7 @@ from sqlmodel import SQLModel, select
 from app.db.session import SessionDep
 from fastapi import HTTPException, status
 from typing import Type, TypeVar, Generic
+from app.models.teach import Teach
 from app.utils.authenciate import hash_password
 from app.models.schedule import Schedule, is_schedule_conflict
 from app.models.section import Section
@@ -30,6 +31,7 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType, PublicSche
             db.refresh(db_obj)
         
         except IntegrityError as e:
+            db.rollback()
             if 'Duplicate entry' in str(e.orig):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
@@ -185,6 +187,7 @@ class CRUDCourse(CRUDNoUpdate[ModelType, CreateSchemaType, UpdateSchemaType, Pub
             db.refresh(db_obj)
 
         except IntegrityError as e:
+            db.rollback()
             if 'Duplicate entry' in str(e.orig):
                 raise HTTPException(
                     status_code=status.HTTP_400_BAD_REQUEST,
@@ -196,4 +199,30 @@ class CRUDCourse(CRUDNoUpdate[ModelType, CreateSchemaType, UpdateSchemaType, Pub
                     detail="An unexpected error occurred while saving the data."
                 )
 
+        return db_obj
+
+class CRUDSection(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, PublicSchemaType]):
+    async def create(self, obj_in: CreateSchemaType, teacher_id: list[int], db: SessionDep) -> PublicSchemaType:
+        validated_obj = self.create_model.model_validate(obj_in)
+        db_obj = self.model(**validated_obj.dict())
+        db.add(db_obj)
+        try:
+            db.commit()
+            db.refresh(db_obj)
+            for teacher in teacher_id:
+                db.add(Teach(teacher_id=teacher, section_id=db_obj.id))
+            db.commit()
+        
+        except IntegrityError as e:
+            db.rollback()
+            if 'Duplicate entry' in str(e.orig):
+                raise HTTPException(
+                    status_code=status.HTTP_400_BAD_REQUEST,
+                    detail="Duplicate entry."
+                )
+            else:
+                raise HTTPException(
+                    status_code=status.HTTP_500_INTERNAL_SERVER_ERROR,
+                    detail="An unexpected error occurred while saving the data."
+                )
         return db_obj

@@ -20,7 +20,7 @@ async def create_favour(raw_data: FavourPreCreate, session: SessionDep, current_
 async def delete_favour(favour_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):
     favour = await favour_crud.read_by_id(favour_id, session)
     if check_host_or_admin(favour.user_id, current_user):
-        await favour_crud.delete(favour_id) 
+        await favour_crud.delete(favour_id, session) 
 
 @router.get('/favour', response_model=Page[FavourPublic])
 async def filter_favour(
@@ -37,5 +37,5 @@ async def filter_favour(
         'section_id': section_id,
     }.items() if v is not None}
 
-    result = favour_crud.read_by_dict(filters, session)
+    result = await favour_crud.read_by_dict(filters, session)
     return paginate(result)
