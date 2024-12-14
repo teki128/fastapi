@@ -5,7 +5,7 @@ from fastapi_pagination import Page, paginate
 from app.models.section import *
 from app.models.user import UserPublic
 from app.db.session import SessionDep
-from app.service.model_crud import section_crud
+from app.service.model_crud import section_crud, lesson_crud, teach_crud, schedule_crud, teacher_crud
 from app.service.authenticate import get_current_admin, get_current_user
 
 router = APIRouter(prefix='/api')
@@ -33,6 +33,27 @@ async def filter_section(
         'lesson_id': lesson_id
     }.items() if v is not None}
     result = await section_crud.read_by_dict(filters, session)    
+    section_ids = [section.id for section in result]
+    section_names = []
+    teacher_names = []
+    section_schedule = []
+    for section in result:
+        section_names.append(section.lesson.name)
+    
+    for section_id in section_ids:
+        teaches = await teach_crud.read_by_dict({'section_id': section_id}, session)
+        per_section_teacher_names = []
+        for teach in teaches:
+            teacher_id = teach.teacher_id
+            teacher_name = (await teacher_crud.read_by_id(teacher_id, session)).name
+            per_section_teacher_names.append(teacher_name)
+        teacher_names.append(per_section_teacher_names)
+        
+        section_schedule.append(await schedule_crud.read_by_dict({'section_id': section_id}, session))
+
+    for i in range(len(result)):
+        result[i] = result[i].to_public(teacher_names[i], section_schedule[i], section_names[i])
+        
     return paginate(result)
 
 @router.patch('/section/{section_id}', response_model=SectionPublic)
