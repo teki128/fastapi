@@ -1,5 +1,5 @@
 from sqlalchemy import BigInteger
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional
 
 class UserBase(SQLModel):
@@ -10,6 +10,8 @@ class UserBase(SQLModel):
 class UserPublic(UserBase):
     tele: Optional[int]
     is_admin: bool = Field(default=False)
+    
+    courses: list['Course'] = Relationship(back_populates='user')
 
 class User(UserBase, table=True):
     hashed_password: str
@@ -17,6 +19,8 @@ class User(UserBase, table=True):
     hashed_answer: Optional[str] = Field(default=None)
     tele: Optional[int] = Field(default=None)
     is_admin: bool = Field(default=False)
+
+    courses: list['Course'] = Relationship(back_populates='user')
 
 class UserCreate(UserBase):
     raw_password: str = Field(min_length=6)

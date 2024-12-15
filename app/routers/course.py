@@ -4,6 +4,7 @@ from fastapi_pagination import Page, paginate
 
 from app.models.course import *
 from app.models.user import UserPublic
+from app.service.model_crud import section_crud
 from app.db.session import SessionDep
 from app.service.model_crud import course_crud, user_crud
 from app.service.authenticate import get_current_admin, get_current_user
@@ -47,6 +48,12 @@ async def filter_course(
     }.items() if v is not None}
 
     result = await course_crud.read_by_dict(filters, session)
+
+    sections = [course.section for course in result]
+    users = [course.user for course in result]
+    
+    for i, course in enumerate(result):
+        result[i] = course.to_public(users[i], (await section_crud.get_detail([sections[i]]))[0])
 
     return paginate(result) 
 # TODO: (Urgent)返回具体的section所有信息 

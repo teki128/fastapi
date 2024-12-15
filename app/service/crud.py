@@ -238,3 +238,14 @@ class CRUDSection(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, Public
         if not result: 
             raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
         return result
+    
+    async def get_detail(self, raw_data: list[ModelType]) -> list[PublicSchemaType]:
+        result = []
+        for section in raw_data:
+            teachers = [teach.teachers for teach in section.teaches]
+            result.append(section.to_public(
+                name=section.lesson.name, 
+                teacher_name=[teacher.name for teacher in teachers], 
+                schedule=section.schedules
+            ))
+        return result

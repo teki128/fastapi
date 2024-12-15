@@ -33,16 +33,8 @@ async def filter_section(
         'lesson_id': lesson_id
     }.items() if v is not None}
     result = await section_crud.read_by_dict(filters, session)    
-
-    for i, section in enumerate(result):
-        teachers = [teach.teachers for teach in section.teaches]
-        result[i] = section.to_public(
-            name=section.lesson.name, 
-            teacher_name=[teacher.name for teacher in teachers], 
-            schedule=section.schedules
-        )
     
-    return paginate(result)
+    return paginate(await(section_crud.get_detail(result)))
 
 @router.patch('/section/{section_id}', response_model=SectionPublic)
 async def update_section(section_id: int, data: SectionUpdate, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):

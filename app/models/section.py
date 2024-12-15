@@ -1,5 +1,6 @@
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional
+from app.models.schedule import SchedulePublic
 
 #课序号 增删查改
 class SectionBase(SQLModel):
@@ -15,6 +16,7 @@ class Section(SectionBase, table=True):
     classroom: 'Classroom' = Relationship(back_populates='sections')
     teaches: list['Teach'] = Relationship(back_populates='sections')
     schedules: list['Schedule'] = Relationship(back_populates='section')
+    courses: list['Course'] = Relationship(back_populates='section')
 
     def to_public(self, teacher_name, schedule, name) -> 'SectionPublic':
         return SectionPublic(
@@ -48,7 +50,7 @@ class SectionPreCreate(SectionBase):
 class SectionPublic(SectionBase):
     id: int
     teacher_names: list[str]
-    schedule: list 
+    schedule: list[SchedulePublic] 
     name: str
 
 class SectionUpdate(SectionBase):
