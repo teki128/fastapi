@@ -14,7 +14,7 @@ router = APIRouter(prefix='/api')
 @router.post('/course', response_model=CoursePublic)
 async def create_course_for_myself(raw_data: CoursePreCreate, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):
     data = raw_data.to_create(current_user.id)
-    return await course_crud.create(data, session) # TODO: 选课注意时间冲突，目前待测试
+    return await course_crud.create(data, session)
 
 @router.post('/course/admin', response_model=CoursePublic)
 async def create_course_for_user(
@@ -47,4 +47,8 @@ async def filter_course(
     }.items() if v is not None}
 
     result = await course_crud.read_by_dict(filters, session)
-    return paginate(result)
+
+    return paginate(result) 
+# TODO: (Urgent)返回具体的section所有信息 
+# TODO: (Urgent)根据section的id查到哪些学生选了课，要返回学生的姓名
+# TODO: (Urgent)course这张表增加一个批量添加和批量删除的接口

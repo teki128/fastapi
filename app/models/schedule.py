@@ -1,5 +1,5 @@
 from enum import Enum
-from sqlmodel import SQLModel, Field
+from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional
 
 #课程时间表 增删查改
@@ -29,6 +29,8 @@ class ScheduleBase(SQLModel):
 class Schedule(ScheduleBase, table=True):
     id: int = Field(primary_key=True)
 
+    section: 'Section' = Relationship(back_populates='schedules')
+
 class ScheduleCreate(ScheduleBase):
     pass
 
@@ -43,7 +45,6 @@ class ScheduleUpdate(ScheduleBase):
 
 class SchedulePublic(ScheduleBase):
     id: int
-
 
 async def is_schedule_conflict(schedule1: Schedule, schedule2: Schedule):
 

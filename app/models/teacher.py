@@ -8,7 +8,7 @@ class TeacherBase(SQLModel):
 class Teacher(TeacherBase, table=True):
    id: int = Field(primary_key=True)
    college_id: int = Field(foreign_key='college.id')
-   teaches: list['Teach'] = Relationship(back_populates="teacher")
+   teaches: list['Teach'] = Relationship(back_populates="teachers")
 
 class TeacherCreate(TeacherBase):
    pass
@@ -19,3 +19,5 @@ class TeacherUpdate(TeacherBase):
 class TeacherPublic(TeacherBase):
    id: int
    college_id: int = Field(foreign_key='college.id')
+
+   teaches: list['Teach'] = Relationship(back_populates="teachers")

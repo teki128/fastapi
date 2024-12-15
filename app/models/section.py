@@ -12,6 +12,9 @@ class SectionBase(SQLModel):
 class Section(SectionBase, table=True):
     id: int = Field(primary_key=True)
     lesson: 'Lesson' = Relationship(back_populates='sections')
+    classroom: 'Classroom' = Relationship(back_populates='sections')
+    teaches: list['Teach'] = Relationship(back_populates='sections')
+    schedules: list['Schedule'] = Relationship(back_populates='section')
 
     def to_public(self, teacher_name, schedule, name) -> 'SectionPublic':
         return SectionPublic(
@@ -44,7 +47,6 @@ class SectionPreCreate(SectionBase):
 
 class SectionPublic(SectionBase):
     id: int
-    lesson: 'Lesson' = Relationship(back_populates='sections')
     teacher_names: list[str]
     schedule: list 
     name: str

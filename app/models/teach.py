@@ -8,7 +8,8 @@ class TeachBase(SQLModel):
 
 class Teach(TeachBase, table=True):
     id: int = Field(primary_key=True)
-    teacher: list['Teacher'] = Relationship(back_populates="teaches")
+    teachers: list['Teacher'] = Relationship(back_populates="teaches")
+    sections: list['Section'] = Relationship(back_populates="teaches")
 
     __table_args__ = (UniqueConstraint('teacher_id', 'section_id', name='uix_teacher_section'),)
 
@@ -20,3 +21,6 @@ class TeachUpdate(TeachBase):
 
 class TeachPublic(TeachBase):
     id: int
+
+    teachers: list['Teacher'] = Relationship(back_populates="teaches")
+    sections: list['Section'] = Relationship(back_populates="teaches")
