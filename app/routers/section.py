@@ -12,7 +12,8 @@ router = APIRouter(prefix='/api')
 
 @router.post('/section', response_model=SectionPublic)
 async def create_section(data: SectionPreCreate, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):
-    return await section_crud.create(data.to_create(), data.teacher_id, session)
+    sn = await section_crud.get_next_sn(data.lesson_id, session)
+    return await section_crud.create(await data.to_create(sn=sn), data.teacher_id, session)
 
 @router.delete('/section/{section_id}')
 async def delete_section(section_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):

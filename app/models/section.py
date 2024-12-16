@@ -1,10 +1,10 @@
+from fastapi import HTTPException
 from sqlmodel import SQLModel, Field, Relationship
 from typing import Optional
 from app.models.schedule import SchedulePublic
 
 #课序号 增删查改
 class SectionBase(SQLModel):
-    sn: int
     lesson_id: int = Field(foreign_key='lesson.id')
     capacity: int = Field(ge=0, le=200)
     info: Optional[str]
@@ -12,6 +12,7 @@ class SectionBase(SQLModel):
 
 class Section(SectionBase, table=True):
     id: int = Field(primary_key=True)
+    sn: int
     lesson: 'Lesson' = Relationship(back_populates='sections')
     classroom: 'Classroom' = Relationship(back_populates='sections')
     teaches: list['Teach'] = Relationship(back_populates='sections')
@@ -38,9 +39,9 @@ class SectionCreate(SectionBase):
 class SectionPreCreate(SectionBase):
     teacher_id: list[int] = Field(foreign_key='teacher.id')
 
-    def to_create(self) -> SectionCreate:
+    async def to_create(self, sn: int) -> SectionCreate:
         return SectionCreate(
-            sn=self.sn,
+            sn=sn,
             lesson_id=self.lesson_id,
             capacity=self.capacity,
             info=self.info,
@@ -49,6 +50,7 @@ class SectionPreCreate(SectionBase):
 
 class SectionPublic(SectionBase):
     id: int
+    sn: int
     teacher_names: list[str]
     schedule: list[SchedulePublic] 
     name: str
