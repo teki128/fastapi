@@ -13,7 +13,8 @@ router = APIRouter(prefix='/api')
 @router.post('/section', response_model=SectionPublic)
 async def create_section(data: SectionPreCreate, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):
     sn = await section_crud.get_next_sn(data.lesson_id, session)
-    return await section_crud.create(await data.to_create(sn=sn), data.teacher_id, session)
+    result = await section_crud.create(data.to_create(sn), data.teacher_id, session)
+    return (await section_crud.get_detail([result]))[0]
 
 @router.delete('/section/{section_id}')
 async def delete_section(section_id: int, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):
@@ -39,4 +40,5 @@ async def filter_section(
 
 @router.patch('/section/{section_id}', response_model=SectionPublic)
 async def update_section(section_id: int, data: SectionUpdate, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):
-    return await section_crud.update(section_id, data, session)
+    result = await section_crud.update(section_id, data, session)
+    return (await section_crud.get_detail([result]))[0]

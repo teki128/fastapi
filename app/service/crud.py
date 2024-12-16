@@ -240,8 +240,7 @@ class CRUDSection(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, Public
         return result
     
     async def get_next_sn(self, lesson_id: int, db: SessionDep) -> int:
-        query = select(self.model).where(self.model.lesson_id == lesson_id)
-        result = db.exec(query).all()
+        result = db.exec(select(Section).where(Section.lesson_id == lesson_id)).all()
         return len(result) + 1
     
     async def get_detail(self, raw_data: list[ModelType]) -> list[PublicSchemaType]:

@@ -34,12 +34,13 @@ class Section(SectionBase, table=True):
         )
 
 class SectionCreate(SectionBase):
+    sn: int
     pass
 
 class SectionPreCreate(SectionBase):
     teacher_id: list[int] = Field(foreign_key='teacher.id')
 
-    async def to_create(self, sn: int) -> SectionCreate:
+    def to_create(self, sn: int) -> SectionCreate:
         return SectionCreate(
             sn=sn,
             lesson_id=self.lesson_id,
