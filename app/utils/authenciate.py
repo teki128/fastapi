@@ -15,6 +15,6 @@ def check_host_or_admin(user_id: int, current_user):
     return current_user
 
 def check_host_or_admin_only_admin_modify_id(data, user_id: int, current_user):
-    if hasattr(data, 'id') and not current_user.is_admin: # 只有admin可以修改id
+    if data.id and not current_user.is_admin: # 只有admin可以修改id
         raise HTTPException(status_code=403, detail="You are not an admin.")
     return check_host_or_admin(user_id, current_user) # 为了保持一致性，这里调用了check_host_or_admin

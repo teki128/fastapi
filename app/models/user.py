@@ -10,7 +10,7 @@ class UserBase(SQLModel):
 class UserPublic(UserBase):
     tele: Optional[int]
     is_admin: bool = Field(default=False)
-    
+    question: Optional[str] = Field(default=None)
     courses: list['Course'] = Relationship(back_populates='user')
 
 class User(UserBase, table=True):
