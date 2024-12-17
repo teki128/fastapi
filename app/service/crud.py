@@ -241,8 +241,8 @@ class CRUDSection(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, Public
         result = db.exec(query).all()
         for section in result: 
             section.capacity -= db.exec(select(Course).where(Course.section_id == section.id)).all().__len__()
-        if not result: 
-            raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
+        # if not result:
+        #     raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
         return result
     
     async def get_next_sn(self, lesson_id: int, db: SessionDep) -> int:
