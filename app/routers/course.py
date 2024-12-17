@@ -37,7 +37,6 @@ async def create_course_for_user(
     session: SessionDep,
     current_admin: Annotated[UserPublic, Depends(get_current_admin)]
 ):
-    result = []
     for each_data in data:
         course = await course_crud.create(each_data, session)
 
@@ -50,8 +49,8 @@ async def create_course_for_user(
             schedule=section.schedules
         )
         course_public = course.to_public(user, section_public)
-        result.append(course_public)
-    return result
+
+    return course_public
 
 @router.delete('/course/')
 async def delete_course(course_id: list[int], session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_user)]):
