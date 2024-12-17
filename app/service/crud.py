@@ -53,8 +53,8 @@ class CRUDBase(Generic[ModelType, CreateSchemaType, UpdateSchemaType, PublicSche
             query = query.where(getattr(self.model, key) == value)
 
         result = db.exec(query).all()
-        if not result: 
-            raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
+        # if not result:
+        #     raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
         return result
 
     async def delete(self, obj_id: int, db: SessionDep) -> None:
@@ -153,6 +153,12 @@ class CRUDCourse(CRUDNoUpdate[ModelType, CreateSchemaType, UpdateSchemaType, Pub
 
     async def is_section_full(self, db_obj: ModelType, db: SessionDep) ->bool:
         db_section = db.get(Section, db_obj.section_id)
+
+        if db_section == None:
+            raise HTTPException(
+                status_code=404,
+                detail="Course not found."
+            )
 
         db_course_statement = select(Course).where(db_obj.section_id == Course.section_id)
         db_course_results = db.execute(db_course_statement)

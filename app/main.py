@@ -20,7 +20,7 @@ app = FastAPI(lifespan=lifespan)
 add_pagination(app)
 
 origins = [
-    "http://localhost:*",
+    "*",
 ]
 
 app.add_middleware(

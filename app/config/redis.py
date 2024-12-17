@@ -9,4 +9,4 @@ PWD: str = redis.get('pwd')
 PORT: int = redis.get("port")
 DB: str = redis.get('db')
 
-REDISURL = f'{DRIVER}://{HOST}'
+REDISURL = f'redis://{DRIVER}://{HOST}'

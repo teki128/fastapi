@@ -15,9 +15,10 @@ class Section(SectionBase, table=True):
     sn: int
     lesson: 'Lesson' = Relationship(back_populates='sections')
     classroom: 'Classroom' = Relationship(back_populates='sections')
-    teaches: list['Teach'] = Relationship(back_populates='sections')
-    schedules: list['Schedule'] = Relationship(back_populates='section')
-    courses: list['Course'] = Relationship(back_populates='section')
+    teaches: list['Teach'] = Relationship(back_populates='sections', sa_relationship_kwargs={'cascade': 'all, delete-orphan'})
+    schedules: list['Schedule'] = Relationship(back_populates='section', sa_relationship_kwargs={'cascade': 'all, delete-orphan'})
+    courses: list['Course'] = Relationship(back_populates='section', sa_relationship_kwargs={'cascade': 'all, delete-orphan'})
+    favours: list['Favour'] = Relationship(back_populates='section', sa_relationship_kwargs={'cascade': 'all, delete-orphan'})
 
     def to_public(self, teacher_name, schedule, name) -> 'SectionPublic':
         return SectionPublic(

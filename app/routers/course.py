@@ -17,7 +17,18 @@ async def create_course_for_myself(raw_data: list[CoursePreCreate], session: Ses
     result = []
     for each_raw_data in raw_data:
         each_data = each_raw_data.to_create(current_user.id)
-        result.append(await course_crud.create(each_data, session))
+        course = await course_crud.create(each_data, session)
+
+        user = await user_crud.read_by_id(each_data.user_id, session)
+        section = await section_crud.read_by_id(each_data.section_id, session)
+        teachers = [teach.teachers for teach in section.teaches]
+        section_public = section.to_public(
+            name=section.lesson.name,
+            teacher_name=[teacher.name for teacher in teachers],
+            schedule=section.schedules
+        )
+        course_public = course.to_public(user, section_public)
+        result.append(course_public)
     return result
 
 @router.post('/course/admin', response_model=CoursePublic)
@@ -28,7 +39,18 @@ async def create_course_for_user(
 ):
     result = []
     for each_data in data:
-        result.append(await course_crud.create(each_data, session))
+        course = await course_crud.create(each_data, session)
+
+        user = await user_crud.read_by_id(each_data.user_id, session)
+        section = await section_crud.read_by_id(each_data.section_id, session)
+        teachers = [teach.teachers for teach in section.teaches]
+        section_public = section.to_public(
+            name=section.lesson.name,
+            teacher_name=[teacher.name for teacher in teachers],
+            schedule=section.schedules
+        )
+        course_public = course.to_public(user, section_public)
+        result.append(course_public)
     return result
 
 @router.delete('/course/')

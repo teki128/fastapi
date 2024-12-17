@@ -1,4 +1,4 @@
-from sqlmodel import SQLModel, Field, UniqueConstraint
+from sqlmodel import SQLModel, Field, UniqueConstraint, Relationship
 
 #收藏表 增删查
 class FavourBase(SQLModel):
@@ -9,6 +9,7 @@ class Favour(FavourBase, table=True):
     id: int = Field(primary_key=True)
     user_id: int = Field(foreign_key='user.id')
     __table_args__ = (UniqueConstraint('user_id', 'section_id', name='uix_user_section_favour'),)
+    section: 'Section' = Relationship(back_populates='favours')
 
 class FavourPublic(FavourBase):
     id: int
