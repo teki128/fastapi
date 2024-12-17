@@ -21,7 +21,7 @@ class LessonBase(SQLModel):
 
 class Lesson(LessonBase, table=True):
     id: int = Field(primary_key=True)
-    sections: list['Section']  = Relationship(back_populates='lesson')
+    sections: list['Section'] = Relationship(back_populates='lesson', sa_relationship_kwargs={'cascade': 'all, delete-orphan'})
 
 class LessonCreate(LessonBase):
     pass

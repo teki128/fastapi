@@ -42,3 +42,4 @@ async def filter_section(
 async def update_section(section_id: int, data: SectionUpdate, session: SessionDep, current_user: Annotated[UserPublic, Depends(get_current_admin)]):
     result = await section_crud.update(section_id, data, session)
     return (await section_crud.get_detail([result]))[0]
+
