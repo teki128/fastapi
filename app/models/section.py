@@ -60,7 +60,7 @@ class SectionPublic(SectionBase):
 class SectionUpdate(SectionBase):
     sn: Optional[int] = None
     lesson_id: int = Field(foreign_key='lesson.id', default=None)
-    capacity: Optional[int] = Field(le=0, ge=200, default=None)
+    capacity: Optional[int] = Field(ge=0, le=200, default=None)
     info: Optional[str] = None
     classroom_id: Optional[int] = Field(foreign_key='classroom.id', default=None)
 

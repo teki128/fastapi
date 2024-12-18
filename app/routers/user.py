@@ -25,7 +25,6 @@ async def delete_user(user_id: int, session: SessionDep, current_user: Annotated
 @router.get('/user', response_model=Page[UserPublic])
 async def filter_user(
     session: SessionDep,
-    current_user: Annotated[UserPublic, Depends(get_current_admin)],
     id: Annotated[Optional[int], Query()] = None,
     name: Annotated[Optional[str], Query()] = None,
     college_id: Annotated[Optional[int], Query()] = None
@@ -34,7 +33,7 @@ async def filter_user(
     filters = {k: v for k, v in {
         'id': id,
         'name': name,
-        'college_id': college_id
+        'college_id': college_id,
     }.items() if v is not None}
 
     result = await user_crud.read_by_dict(filters, session)
