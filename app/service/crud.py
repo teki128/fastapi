@@ -1,5 +1,5 @@
 from sqlalchemy.exc import IntegrityError
-from sqlmodel import SQLModel, select
+from sqlmodel import SQLModel, select, and_
 from app.db.session import SessionDep
 from fastapi import HTTPException, status
 from typing import Type, TypeVar, Generic
@@ -8,6 +8,7 @@ from app.utils.authenciate import hash_password
 from app.models.schedule import Schedule, is_schedule_conflict
 from app.models.section import Section
 from app.models.course import Course
+from sqlalchemy.sql import exists
 
 ModelType = TypeVar("ModelType", bound=SQLModel)
 CreateSchemaType = TypeVar("CreateSchemaType")
@@ -238,6 +239,25 @@ class CRUDSection(CRUDBase[ModelType, CreateSchemaType, UpdateSchemaType, Public
         for key, value in attr.items():
             query = query.where(getattr(self.model, key) == value)
 
+        query = query.where(self.model.classroom_id.isnot(None))
+        query = query.where(
+            exists().where(
+                and_(
+                    Schedule.section_id == self.model.id,
+                    Schedule.id.isnot(None)  # 确保 Schedule 不为空
+                )
+            ).correlate(self.model)
+        )
+
+        # 筛选 Teach 不为空
+        query = query.where(
+            exists().where(
+                and_(
+                    Teach.section_id == self.model.id,
+                    Teach.id.isnot(None)  # 确保 Teach 不为空
+                )
+            ).correlate(self.model)
+        )
         result = db.exec(query).all()
         # if not result:
         #     raise HTTPException(status_code=404, detail=f"{self.model.__name__} not found")
